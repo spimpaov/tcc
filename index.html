@@ -1,0 +1,34 @@
+<html>
+
+  <head>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/css/bootstrap.min.css" integrity="sha384-Vkoo8x4CGsO3+Hhxv8T/Q5PaXtkKtu6ug5TOeNV6gBiFeWPGFN9MuhOf23Q9Ifjh" crossorigin="anonymous">
+    <script src="https://cdn.jsdelivr.net/npm/mermaid@8.4.0/dist/mermaid.min.js"></script>
+  </head>
+
+
+  <body>
+
+    <textarea id="question">Pergunta</textarea>
+    <button class="btn btn-info" onclick="submitQuestion()">Verificar</button>
+
+    <br><br>
+    
+    Estados
+    <textarea id="states">{ "a": "b" }</textarea>
+
+    Transições
+    <textarea id="transitions">{ "a": "b" }</textarea>
+    <button class="btn btn-info" onclick="submitGraph()">Atualizar Grafo</button>
+    
+    <div class="mermaid">
+      graph TD
+      x["x(q)"] --> y["y(q)"]
+      y["y(q)"] --> z["z(v)"]
+      y["y(q)"] --> s["s(q,v)"]
+    </div>
+    
+  </body>
+  <script src="main.js"></script>
+  <script src="util.js"></script>
+  
+</html>
