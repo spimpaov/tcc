@@ -1,6 +1,7 @@
 function submitQuestion() {
     var question = document.getElementById('question').value;
     console.log(question);
+    iterateInput(question);
 }
 
 function submitGraph() {
@@ -12,4 +13,8 @@ function submitGraph() {
 
     console.log(statesOBJ);
     console.log(transitionsOBJ);
+}
+
+function renderInvalidQuestion() {
+    alert("Invalid question!");
 }
