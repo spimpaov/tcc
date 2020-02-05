@@ -8,29 +8,34 @@
 
   <body>
 
-    <textarea id="question">Pergunta</textarea>
+    <h3>Pergunta</h3>
+    <br>
+    <textarea id="question">abU</textarea>
     <button class="btn btn-info" onclick="submitQuestion()">Verificar</button>
-
+    <br>
+    <div id="result"></div>
     <br><br>
     
-    Estados
+    <!-- Estados
     <textarea id="states">{ "a": "b" }</textarea>
 
     Transições
     <textarea id="transitions">{ "a": "b" }</textarea>
-    <button class="btn btn-info" onclick="submitGraph()">Atualizar Grafo</button>
+    <button class="btn btn-info" onclick="submitGraph()">Atualizar Grafo</button> -->
     
+    <br><br>
+    <h3>Grafo default</h3>
     <div class="mermaid">
       graph TD
-      x["x(q)"] --> y["y(q)"]
-      y["y(q)"] --> z["z(v)"]
-      y["y(q)"] --> s["s(q,v)"]
+      x["x(a)"] --> y["y(a,b)"]
+      y["y(a,b)"] --> z["z(c)"]
+      x["x(a)"] --> z["z(c)"]
     </div>
     
   </body>
   <script src="main.js"></script>
   <script src="util.js"></script>
   <script src="logic-validator.js"></script>
-  <script src="database.js"></script>
+  <script src="graph.js"></script>
   
 </html>
