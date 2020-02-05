@@ -1,7 +1,8 @@
 function submitQuestion() {
     var question = document.getElementById('question').value;
-    console.log(question);
-    iterateInput(question);
+    console.log("Question: " + question);
+    // iterateInput(question);
+    validateQuestionOnGraph(question, defaultGraph[0]);
 }
 
 function submitGraph() {

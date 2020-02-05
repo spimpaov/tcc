@@ -21,29 +21,31 @@ var operators = {
 
 var executionStack = [];
 
-function iterateInput(input) {
-    for (let char of input) {
+function validateQuestionOnState(question, database) {
+    for (let char of question) {
         pushToStack(char);
         if (isOperator(char)) {
-            pushToStack(calculate());
+            pushToStack(calculate(database));
         }
     }
-    validateResult();
-    resetStack();
-}
 
-function validateResult() {
-    if (executionStack.length != 1) {
+    if (executionStack.length === 1) {
+        var result = getValue(executionStack[0], database);
+    } else {
+        //invalid input!
         renderInvalidQuestion();
+        return;
     }
+    resetStack();
+    return result;
 }
 
 function isOperator(char) {
     return (char in operators) ? true : false;
 }
 
-function getValue(char) {
-    return (char in database) ? database[char] : false;
+function getValue(element, database) {
+    return (element === true || database.includes(element)) ? true : false;
 }
 
 function pushToStack(element) {
@@ -71,13 +73,13 @@ function resetStack() {
     executionStack.length = 0;
 }
 
-function calculate() {
+function calculate(database) {
     var operator = operators[executionStack.pop()];
     var operands = [];
     
     console.log(operator.number_of_operands);
     for (var i = 0; i < operator.number_of_operands; i++) {
-        operands[i] = getValue(popFromStack());
+        operands[i] = getValue(popFromStack(), database);
     }
     return operator.method(operands);
 }
