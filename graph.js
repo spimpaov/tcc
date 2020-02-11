@@ -1,30 +1,35 @@
 const defaultGraph = [
     {
         state: "x",
-        relatedTo: ["y", "z"],
-        knowledge: ["a"],
+        relatedTo: {
+            "a": ["Z"],
+            "b": ["y", "z"]
+        },
+        knowledge: ["p"],
     },
     {
         state: "y",
-        relatedTo: ["z"],
-        knowledge: ["a", "b"],
+        relatedTo: {
+        },
+        knowledge: ["p", "t"],
     },
     {
         state: "z",
-        relatedTo: [],
-        knowledge: ["c"],
-    }
+        relatedTo: {
+            "a": ["w"],
+        },
+        knowledge: ["s"],
+    },
+    {
+        state: "w",
+        relatedTo: {
+        },
+        knowledge: ["p", "t", "s"],
+    },
 ]
 
-// var inputGraph = {};
-
 function validateQuestionOnGraph(question, root) {
-    var result = validateQuestionOnState(question, root.knowledge);
-    console.log("CurrentState: " + root.state + ", result: " + result);
-
-    // for (neighbour in root.relatedTo) {
-    //     validateQuestionOnGraph(question, neighbour);
-    // }
+    var result = validateQuestionOnState(question, root);
     renderResult(result);
 }
 

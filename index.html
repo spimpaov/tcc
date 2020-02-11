@@ -10,7 +10,7 @@
 
     <h3>Pergunta</h3>
     <br>
-    <textarea id="question">abU</textarea>
+    <textarea id="question">ptU</textarea>
     <button class="btn btn-info" onclick="submitQuestion()">Verificar</button>
     <br>
     <div id="result"></div>
@@ -27,9 +27,9 @@
     <h3>Grafo default</h3>
     <div class="mermaid">
       graph TD
-      x["x(a)"] --> y["y(a,b)"]
-      y["y(a,b)"] --> z["z(c)"]
-      x["x(a)"] --> z["z(c)"]
+      x["x(p)"]-->|b| y["y(p,t)"]
+      x["x(p)"]-->|a, b| z["z(s)"]
+      z["z(s)"]-->|a| w["w(p,t,s)"]
     </div>
     
   </body>
