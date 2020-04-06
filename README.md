@@ -13,7 +13,9 @@
 - Uma transição já fixada pode ser apagada ao apertar 't' enquanto o mouse está sobre uma transição. O mouse está sobre uma transição quando a cor da transição se altera (de cinza para rosa).
 
 #### Atribuindo labels a estados ou transições
-
 - Todo estado e transição já é criado com uma label padrão. No caso de estados é o seu ID e no caso de transições é um texto arbitrário. Essas labels podem ser editadas ao apertar 'w' sobre algum destes elementos. 
 - Ao apertar 'w' com o mouse sobre um estado ou transição, o programa entra em modo de escrita, onde todas as teclas de controle são temporariamente desativadas. Deve-se digitar na caixa de texto que surge no topo esquerdo da página a nova label que se deseja atribuir ao elemento. Quando satisfeito, basta apertar no botão 'Submit' que o programa sai de modo de escrita e volta a interpretar determinados caracteres como comandos.
 - Durante modo de escrita, pode-se verificar qual estado ou transição está sendo editado no momento através da cor alaranjada.
+
+#### Imprimindo informação sobre o estado atual do programa
+- Apertar 'i' faz com que o programa imprima informações gerais sobre seu estado atual no console do browser (número de estados, número de transições e os objetos de cada um desses elementos)
