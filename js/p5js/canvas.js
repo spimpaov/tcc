@@ -99,7 +99,8 @@ class myTransition {
 }
 
 function setup() {
-  createCanvas(900, 600);
+  var cnv = createCanvas(1500, 800);
+  cnv.parent("sketchHolder");
   rectMode(RADIUS);
   print(random(50));
 }
@@ -181,10 +182,11 @@ function keyTyped() {
 
   //write control 
   } else if (!writingText && key === 'w' && currentTransition === null) {
-    writingText = true;
     if (touchedState !== null) { //write to state
+      writingText = true;
       editStateText(touchedState);
     } else if (touchedTransition !== null) { //write to transition
+      writingText = true;
       editTransitionText(touchedTransition);
     }
 
@@ -196,11 +198,14 @@ function keyTyped() {
 
 function editStateText(s) {
   s.editing = true;
-  let inp = createInput(s.text);
-  inp.position(20, 65);
+  let inp = createInput(s.text.toString(10));
+  inp.position(50, 50);
+  inp.parent("sketchHolder");
 
   button = createButton('Submit');
-  button.position(inp.x + inp.width, 65);
+  button.position(inp.x + inp.width, 50);
+  button.parent("sketchHolder");
+
   button.mousePressed(function() {
     let index = states.indexOf(s);
     states[index].text = inp.value();
@@ -214,10 +219,14 @@ function editStateText(s) {
 function editTransitionText(t) {
   t.editing = true;
   let inp = createInput(t.text);
-  inp.position(20, 65);
+  inp.position(50, 50);
+  inp.parent("sketchHolder");
+
 
   button = createButton('Submit');
-  button.position(inp.x + inp.width, 65);
+  button.position(inp.x + inp.width, 50);
+  button.parent("sketchHolder");
+
   button.mousePressed(function() {
     let index = transitions.indexOf(t);
     transitions[index].text = inp.value();
@@ -287,7 +296,6 @@ function deleteState(state) {
   }
   let index = states.indexOf(state);
   states.splice(index, 1);
-
 }
 
 //delete given transition from transitions array
