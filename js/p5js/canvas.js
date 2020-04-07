@@ -74,6 +74,7 @@ class myTransition {
   drawArrow(base, vec, myColor, unfinished) {
     var resultVector = createVector(vec.x - base.x, vec.y - base.y);
     push();
+
     strokeWeight(3);
     if (this.editing) {
       stroke(255, 119, 51);
@@ -82,18 +83,32 @@ class myTransition {
       fill(myColor);
       stroke(myColor);
     } 
+    
     translate(base.x, base.y);
     line(0, 0, resultVector.x, resultVector.y);
     rotate(resultVector.heading());
     let arrowSize = 10;
+
     if (unfinished) {
       translate(resultVector.mag() - arrowSize, 0);
     } else {
+      this.drawTransitionText(resultVector);
       translate(resultVector.mag() - arrowSize - stateRadius, 0);
       noStroke();
-      text(this.text, -15, 15);
     }
+
     triangle(0, arrowSize / 2, 0, -arrowSize / 2, arrowSize, 0);
+    pop();
+  }
+
+  drawTransitionText(arrow) {
+    push();
+    rotate(-arrow.heading());
+    textAlign(CENTER, CENTER);  
+    textStyle(BOLD);
+    stroke(255, 255, 255);
+    translate(arrow.x/2, arrow.y/2);
+    text(this.text, 0, 0);
     pop();
   }
 }
