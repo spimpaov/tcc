@@ -165,7 +165,7 @@ function keyTyped() {
   touchedTransition = cursorInsideAnyTransition();
 
   //state control
-  if (!writingText && key === 's') {
+  if (!writingText && (key === 's' || key === 'S')) {
     if (touchedState !== null) { //delete state
       deleteState(touchedState);
     } else { //create state
@@ -173,7 +173,7 @@ function keyTyped() {
     }
 
     //transition control
-  } else if (!writingText && key === 't') {
+  } else if (!writingText && (key === 't' || key === 'T')) {
     if (touchedState !== null) {
       if (currentTransition !== null) { //fixate transition
         currentTransition.destinyState = touchedState;
@@ -196,7 +196,7 @@ function keyTyped() {
     }
 
   //write control 
-  } else if (!writingText && key === 'w' && currentTransition === null) {
+  } else if (!writingText && (key === 'w' || key === 'W') && currentTransition === null) {
     if (touchedState !== null) { //write to state
       writingText = true;
       editStateText(touchedState);
@@ -206,7 +206,7 @@ function keyTyped() {
     }
 
     //print info about current states and transitions
-  } else if (!writingText && key === 'i') {
+  } else if (!writingText && (key === 'i' || key === 'I')) {
     printInfo();
   }
 }
