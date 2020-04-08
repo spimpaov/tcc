@@ -114,14 +114,14 @@ class myTransition {
 }
 
 function setup() {
-  var cnv = createCanvas(1500, 800);
+  var cnv = createCanvas(1800, 900);
   cnv.parent("sketchHolder");
   rectMode(RADIUS);
   print(random(50));
 }
 
 function draw() {
-  background(255);
+  background(240);
 
   //reset states hover 
   for (let s of states) {
