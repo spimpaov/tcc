@@ -5,6 +5,8 @@ let touchedState = null;
 let touchedTransition = null;
 let currentTransition = null;
 let writingText = false;
+let writingStateText = false;
+let writingTransitionText = false;
 let stateRadius = 50;
 let nextCircleID = 0;
 
@@ -25,6 +27,8 @@ class myCircle {
     this.hover = false;
     this.editing = false;
     this.text = this.id;
+    this.name = nextCircleID;
+    this.variables = ["p", "q"];
   }
 
   display() {
@@ -43,7 +47,9 @@ class myCircle {
     ellipse(this.x, this.y, 2 * stateRadius);
     pop();
     textAlign(CENTER, CENTER);
-    text(this.text, this.x, this.y);
+    var displayText = this.name + ": [" + this.variables + "]";
+    textSize(14);
+    text(displayText, this.x, this.y);
   }
 }
 
@@ -54,6 +60,10 @@ class myTransition {
     this.hover = false;
     this.editing = false;
     this.text = 'a,b';
+    
+    
+    this.source = originState.name;
+    this.agents = ["a", "b"];
   }
 
   display() {
@@ -104,11 +114,12 @@ class myTransition {
   drawTransitionText(arrow) {
     push();
     rotate(-arrow.heading());
-    textAlign(CENTER, CENTER);  
+    textAlign(CENTER, CENTER); 
+    strokeWeight(5); 
     textStyle(BOLD);
     stroke(255, 255, 255);
     translate(arrow.x/2, arrow.y/2);
-    text(this.text, 0, 0);
+    text(this.agents, 0, 0);
     pop();
   }
 }
@@ -157,6 +168,24 @@ function draw() {
     states[i].display();
   }
 
+  //desenha texto durante modo de escrita
+  if (writingStateText) {
+    push();
+    textSize(18);
+    textAlign(RIGHT);
+    text('State Name:', 195, 70);
+    text('State Variables:', 195, 100);
+    pop();
+  }
+
+  if (writingTransitionText) {
+    push();
+    textSize(18);
+    textAlign(RIGHT);
+    text('Agents:', 195, 70);
+    pop();
+  }
+
 }
 
 //check for any keyboard input
@@ -177,6 +206,7 @@ function keyTyped() {
     if (touchedState !== null) {
       if (currentTransition !== null) { //fixate transition
         currentTransition.destinyState = touchedState;
+        currentTransition.target = touchedState.name;
         deleteTransitionDuplicates(currentTransition);
         currentTransition = null;
       } else { //create transition
@@ -213,40 +243,53 @@ function keyTyped() {
 
 function editStateText(s) {
   s.editing = true;
-  let inp = createInput(s.text.toString(10));
-  inp.position(50, 50);
-  inp.parent("sketchHolder");
+  writingStateText = true;
+  let nameInput = createInput(s.name.toString(10));
+  let variablesInput = createInput(s.variables.toString(10));
 
-  button = createButton('Submit');
-  button.position(inp.x + inp.width, 50);
+  nameInput.position(200, 50);
+  nameInput.parent("sketchHolder");
+
+  variablesInput.position(nameInput.x, nameInput.y + nameInput.height + 5);
+  variablesInput.parent("sketchHolder");
+  let button = createButton('Submit');
+  button.position(variablesInput.x + variablesInput.width + 5, variablesInput.y);
   button.parent("sketchHolder");
+
 
   button.mousePressed(function() {
     let index = states.indexOf(s);
-    states[index].text = inp.value();
+    states[index].text = nameInput.value();
+    states[index].name = nameInput.value();
+    states[index].variables = variablesInput.value().replace(/\s/g,'').split(",");
     states[index].editing = false;
     writingText = false;
+    writingStateText = false;
     button.remove();
-    inp.remove();
+    nameInput.remove();
+    variablesInput.remove();
   });
 }
 
 function editTransitionText(t) {
   t.editing = true;
+  writingTransitionText = true;
   let inp = createInput(t.text);
-  inp.position(50, 50);
+  inp.position(200, 50);
   inp.parent("sketchHolder");
 
 
   button = createButton('Submit');
-  button.position(inp.x + inp.width, 50);
+  button.position(inp.x + inp.width + 5, inp.y);
   button.parent("sketchHolder");
 
   button.mousePressed(function() {
     let index = transitions.indexOf(t);
     transitions[index].text = inp.value();
+    transitions[index].agents = inp.value().replace(/\s/g,'').split(",");
     transitions[index].editing = false;
     writingText = false;
+    writingTransitionText = false;
     button.remove();
     inp.remove();
   });
