@@ -9,6 +9,7 @@ let writingStateText = false;
 let writingTransitionText = false;
 let stateRadius = 50;
 let nextCircleID = 0;
+let mouseInsideCanvas = false;
 
 //lista de estados
 let states = [];
@@ -133,6 +134,7 @@ function setup() {
 
 function draw() {
   background(240);
+  mouseInsideCanvas = (mouseX >= 0 && mouseX <= 1280 && mouseY >= 0 && mouseY <= 720) ? true : false;
 
   //reset states hover 
   for (let s of states) {
@@ -190,6 +192,9 @@ function draw() {
 
 //check for any keyboard input
 function keyTyped() {
+  if (!mouseInsideCanvas) {
+    return;
+  }
   touchedState = cursorInsideAnyCircle();
   touchedTransition = cursorInsideAnyTransition();
 
@@ -201,7 +206,7 @@ function keyTyped() {
       states.push(new myCircle(mouseX, mouseY, 50));
     }
 
-    //transition control
+  //transition control
   } else if (!writingText && (key === 't' || key === 'T')) {
     if (touchedState !== null) {
       if (currentTransition !== null) { //fixate transition
@@ -222,7 +227,6 @@ function keyTyped() {
         deleteTransition(touchedTransition);
         touchedTransition = null;
       }
-
     }
 
   //write control 
@@ -235,7 +239,7 @@ function keyTyped() {
       editTransitionText(touchedTransition);
     }
 
-    //print info about current states and transitions
+  //print info about current states and transitions
   } else if (!writingText && (key === 'i' || key === 'I')) {
     printInfo();
   }
@@ -392,6 +396,13 @@ function deleteTransitionDuplicates(t) {
     let index = transitions.indexOf(duplicates[i]);
     transitions.splice(index, 1);
   }
+}
+
+//empty all states and transitions arrays
+function clearCanvas() {
+  states = [];
+  transitions = [];
+  nextCircleID = 0;
 }
 
 //print current states and transitions
