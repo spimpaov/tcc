@@ -23,11 +23,11 @@ class myCircle {
   constructor(x, y) {
     this.x = x;
     this.y = y;
-    this.id = nextCircleID++;
     this.hover = false;
     this.editing = false;
     this.text = this.id;
-    this.name = nextCircleID;
+    this.name = nextCircleID.toString();
+    this.id = nextCircleID++;
     this.variables = ["p", "q"];
   }
 
@@ -125,7 +125,7 @@ class myTransition {
 }
 
 function setup() {
-  var cnv = createCanvas(1800, 900);
+  var cnv = createCanvas(1280, 720);
   cnv.parent("sketchHolder");
   rectMode(RADIUS);
   print(random(50));
@@ -173,8 +173,8 @@ function draw() {
     push();
     textSize(18);
     textAlign(RIGHT);
-    text('State Name:', 195, 70);
-    text('State Variables:', 195, 100);
+    text('Nome:', 195, 70);
+    text('Variáveis:', 195, 100);
     pop();
   }
 
@@ -182,7 +182,7 @@ function draw() {
     push();
     textSize(18);
     textAlign(RIGHT);
-    text('Agents:', 195, 70);
+    text('Agentes:', 195, 70);
     pop();
   }
 
