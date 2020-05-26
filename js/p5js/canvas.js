@@ -34,6 +34,11 @@ class myCircle {
 
   display() {
     push();
+
+    if (states.indexOf(this) === 0) { //root
+      strokeWeight(5);
+    }
+
     if (this.editing) {
       stroke(255, 119, 51);
       fill(255, 187, 153);
@@ -44,7 +49,6 @@ class myCircle {
       stroke(100, 100, 100);
       fill(200, 200, 200);
     }
-    strokeWeight(3);
     ellipse(this.x, this.y, 2 * stateRadius);
     pop();
     textAlign(CENTER, CENTER);
@@ -239,6 +243,10 @@ function keyTyped() {
       editTransitionText(touchedTransition);
     }
 
+  //define root
+  } else if (!writingText && (key === 'r' || key === 'R') && touchedState !== null ) {
+    setStateAsRoot(touchedState);
+
   //print info about current states and transitions
   } else if (!writingText && (key === 'i' || key === 'I')) {
     printInfo();
@@ -282,7 +290,6 @@ function editTransitionText(t) {
   inp.position(200, 50);
   inp.parent("sketchHolder");
 
-
   button = createButton('Submit');
   button.position(inp.x + inp.width + 5, inp.y);
   button.parent("sketchHolder");
@@ -298,6 +305,13 @@ function editTransitionText(t) {
     inp.remove();
   });
 }
+
+function setStateAsRoot(s) {
+  let sIndex = states.indexOf(s);
+  var lastRoot = states[0];
+  states[0] = s;
+  states[sIndex] = lastRoot;
+} 
 
 function mousePressed() {
   if (!writingText && touchedState !== null && locked === false) {
@@ -413,4 +427,5 @@ function printInfo() {
   print(states);
   print("CurrentTransitions:");
   print(transitions);
+  print("Root: " + states[0].id);
 }
