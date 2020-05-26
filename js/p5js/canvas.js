@@ -106,13 +106,13 @@ class myTransition {
 
     if (unfinished) {
       translate(resultVector.mag() - arrowSize, 0);
+      triangle(0, arrowSize / 2, 0, -arrowSize / 2, arrowSize, 0);
     } else {
       this.drawTransitionText(resultVector);
       translate(resultVector.mag() - arrowSize - stateRadius, 0);
       noStroke();
     }
 
-    triangle(0, arrowSize / 2, 0, -arrowSize / 2, arrowSize, 0);
     pop();
   }
 
@@ -207,7 +207,7 @@ function keyTyped() {
     if (touchedState !== null) { //delete state
       deleteState(touchedState);
     } else { //create state
-      states.push(new myCircle(mouseX, mouseY, 50));
+      createState();
     }
 
   //transition control
@@ -219,9 +219,7 @@ function keyTyped() {
         deleteTransitionDuplicates(currentTransition);
         currentTransition = null;
       } else { //create transition
-        var transition = new myTransition(touchedState, null);
-        transitions.push(transition);
-        currentTransition = transitions[transitions.length - 1];
+        createTransition(touchedState, null);
       }
     } else if (touchedState === null) {
       if (currentTransition !== null) { //cancel current transition
@@ -374,10 +372,26 @@ function deleteState(state) {
   states.splice(index, 1);
 }
 
+//adds a new state to states array and create a transtition for itself
+function createState() {
+  var newState = new myCircle(mouseX, mouseY);
+  states.push(newState);
+  createTransition(newState, newState);
+}
+
 //delete given transition from transitions array
 function deleteTransition(transition) {
   let index = transitions.indexOf(transition);
   transitions.splice(index, 1);
+}
+
+//adds a new transition to transitions array
+function createTransition(origin, destiny) {
+  var transition = new myTransition(origin, destiny);
+  transitions.push(transition);
+  if (destiny === null) {
+    currentTransition = transitions[transitions.length - 1];
+  }  
 }
 
 //returns all transitions associated with a state by his id
