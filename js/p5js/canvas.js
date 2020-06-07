@@ -21,15 +21,15 @@ let transitions = [];
 let arrows = [];
 
 class myCircle {
-  constructor(x, y) {
+  constructor(x, y, variables) {
     this.x = x;
     this.y = y;
     this.hover = false;
     this.editing = false;
-    this.text = this.id;
     this.name = nextCircleID.toString();
     this.id = nextCircleID++;
-    this.variables = ["p", "q"];
+    this.text = this.id;
+    (variables === null) ? this.variables = ["p", "q"] : this.variables = variables;
   }
 
   display() {
@@ -65,8 +65,6 @@ class myTransition {
     this.hover = false;
     this.editing = false;
     this.text = 'a,b';
-    
-    
     this.source = originState.name;
     this.agents = ["a", "b"];
   }
@@ -134,6 +132,15 @@ function setup() {
   cnv.parent("sketchHolder");
   rectMode(RADIUS);
   print(random(50));
+  createDeafultDatabase();
+}
+
+function createDeafultDatabase() {
+  var originState = createState(258, 246, []);
+  var destinyState = createState(518, 246, ["M"]);
+  createTransition(originState, destinyState);
+  createTransition(destinyState, originState);
+  updateDatabaseFromCanvas();
 }
 
 function draw() {
@@ -207,7 +214,7 @@ function keyTyped() {
     if (touchedState !== null) { //delete state
       deleteState(touchedState);
     } else { //create state
-      createState();
+      createState(mouseX, mouseY, null);
     }
 
   //transition control
@@ -216,7 +223,9 @@ function keyTyped() {
       if (currentTransition !== null) { //fixate transition
         currentTransition.destinyState = touchedState;
         currentTransition.target = touchedState.name;
+        var backTransition = createTransition(currentTransition.destinyState, currentTransition.originState);
         deleteTransitionDuplicates(currentTransition);
+        deleteTransitionDuplicates(backTransition);
         currentTransition = null;
       } else { //create transition
         createTransition(touchedState, null);
@@ -373,10 +382,11 @@ function deleteState(state) {
 }
 
 //adds a new state to states array and create a transtition for itself
-function createState() {
-  var newState = new myCircle(mouseX, mouseY);
+function createState(posX, posY, variables) {
+  var newState = new myCircle(posX, posY, variables);
   states.push(newState);
   createTransition(newState, newState);
+  return newState;
 }
 
 //delete given transition from transitions array
@@ -391,7 +401,10 @@ function createTransition(origin, destiny) {
   transitions.push(transition);
   if (destiny === null) {
     currentTransition = transitions[transitions.length - 1];
-  }  
+  } else {
+    transition.target = destiny.name;
+  }
+  return transition;
 }
 
 //returns all transitions associated with a state by his id
@@ -442,4 +455,6 @@ function printInfo() {
   print("CurrentTransitions:");
   print(transitions);
   print("Root: " + states[0].id);
+  //print("###############");
+  //print(database);
 }
