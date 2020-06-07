@@ -59,7 +59,7 @@ class myCircle {
 }
 
 class myTransition {
-  constructor(originState, destinyState) {
+  constructor(originState, destinyState, sister) {
     this.originState = originState;
     this.destinyState = destinyState;
     this.hover = false;
@@ -67,6 +67,7 @@ class myTransition {
     this.text = 'a,b';
     this.source = originState.name;
     this.agents = ["a", "b"];
+    this.sister = sister;
   }
 
   display() {
@@ -136,10 +137,11 @@ function setup() {
 }
 
 function createDeafultDatabase() {
-  var originState = createState(258, 246, []);
-  var destinyState = createState(518, 246, ["M"]);
-  createTransition(originState, destinyState);
-  createTransition(destinyState, originState);
+  var s0 = createState(258, 246, []);
+  var s1 = createState(518, 246, ["M"]);
+  var t0 = createTransition(s0, s1, null);
+  var t1 = createTransition(s1, s0, t0);
+  t0.sister = t1;
   updateDatabaseFromCanvas();
 }
 
@@ -167,6 +169,9 @@ function draw() {
   //hover touched transition if any
   if (!writingText && touchedTransition !== null && currentTransition === null) {
     touchedTransition.hover = true;
+    if (touchedTransition.sister !== null && touchedTransition.sister !== undefined) {
+      touchedTransition.sister.hover = true;
+    }
   }
 
   touchedTransition = cursorInsideAnyTransition();
@@ -223,12 +228,13 @@ function keyTyped() {
       if (currentTransition !== null) { //fixate transition
         currentTransition.destinyState = touchedState;
         currentTransition.target = touchedState.name;
-        var backTransition = createTransition(currentTransition.destinyState, currentTransition.originState);
+        var sisterTransition = createTransition(currentTransition.destinyState, currentTransition.originState, currentTransition);
+        currentTransition.sister = sisterTransition;
         deleteTransitionDuplicates(currentTransition);
-        deleteTransitionDuplicates(backTransition);
+        deleteTransitionDuplicates(sisterTransition);
         currentTransition = null;
       } else { //create transition
-        createTransition(touchedState, null);
+        createTransition(touchedState, null, null);
       }
     } else if (touchedState === null) {
       if (currentTransition !== null) { //cancel current transition
@@ -236,6 +242,7 @@ function keyTyped() {
         currentTransition = null;
       } else if (touchedTransition !== null) { //delete touched transition
         deleteTransition(touchedTransition);
+        deleteTransition(touchedTransition.sister);
         touchedTransition = null;
       }
     }
@@ -292,6 +299,9 @@ function editStateText(s) {
 
 function editTransitionText(t) {
   t.editing = true;
+  if (t.sister !== undefined && t.sister !== null) {
+    t.editing.sister = true;
+  }
   writingTransitionText = true;
   let inp = createInput(t.text);
   inp.position(200, 50);
@@ -306,6 +316,12 @@ function editTransitionText(t) {
     transitions[index].text = inp.value();
     transitions[index].agents = inp.value().replace(/\s/g,'').split(",");
     transitions[index].editing = false;
+    if (transitions[index].sister !== undefined && transitions[index].sister !== null) {
+      let sisterIndex = transitions.indexOf(t.sister);
+      transitions[sisterIndex].text = inp.value();
+      transitions[sisterIndex].agents = inp.value().replace(/\s/g,'').split(",");
+      transitions[sisterIndex].editing = false;
+    }
     writingText = false;
     writingTransitionText = false;
     button.remove();
@@ -396,8 +412,8 @@ function deleteTransition(transition) {
 }
 
 //adds a new transition to transitions array
-function createTransition(origin, destiny) {
-  var transition = new myTransition(origin, destiny);
+function createTransition(origin, destiny, sister) {
+  var transition = new myTransition(origin, destiny, sister);
   transitions.push(transition);
   if (destiny === null) {
     currentTransition = transitions[transitions.length - 1];
