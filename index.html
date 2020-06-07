@@ -11,12 +11,24 @@
   </head>
   <body>
     <div class="p-2">
-      <h1>Verificador de Lógica Epistêmica</h1>
+      <h3>Verificador de Lógica Epistêmica</h3>
       <br>
       <div class="row">
         <div class="col-3">
-          <h3>Pergunta</h3>
+          <h5>Agentes</h5>
           <div class="px-1 bg-light">
+            <br>
+            <input id="agents" type="text" value="a,b">
+            <button class="mt-1" onClick="setAgents()">OK!</button>
+            <br>
+            <span id="agents-output"></span>
+            <br>
+            <br>
+          </div>
+          <br>
+          <h5>Pergunta</h5>
+          <div class="px-1 bg-light">
+            <button type="button" id="btn_pergunta" onClick="openQuestionHelpText()">?</button>
             <br>
             <input id="input" type="text">
             <button class="mt-1" onClick="calculateBasedOnUserInput()">Calcular!</button>
@@ -26,131 +38,142 @@
             <br>
           </div>
           <br>
-          <button type="button" data-toggle="collapse" data-target="#multiCollapseExample1" aria-expanded="false" aria-controls="multiCollapseExample1">Visualizar ajuda</button>
-          <br>
-          <div class="collapse multi-collapse" id="multiCollapseExample1">
-            <br>
-            <small>
-              - A notação utilizada para a pergunta é a pós-fixada!
+          <div id="modal_pergunta" class="modal">
+            <div class="modal-content">
+              <h5>Pergunta</h5>
+              <small>
+                <ul>
+                  <li>A notação utilizada para a pergunta é a pós-fixada!</li>
+                  <li>A raiz é, por padrão, o primeiro estado a ser definido.</li>
+                </ul>
+              </small>
               <br>
-              - A raiz é, por padrão, o primeiro estado a ser definido.
-              <br>
-            </small>
-            <br>
-            <table class="table border text-center">
-              <thead>
-                <th scope="col">Operador</th>
-                <th scope="col">Caractere Correspondente</th>
-              </thead>
-              <tbody>
-                <tr>
-                  <td>¬</td>
-                  <td>!</td>
-                </tr>
-                <tr>
-                  <td>∧</td>
-                  <td>^</td>
-                </tr>
-                <tr>
-                  <td>∨</td>
-                  <td>U</td>
-                </tr>
-                <tr>
-                  <td>→</td>
-                  <td>></td>
-                </tr>
-                <tr>
-                  <td>K<sub>n</sub></td>
-                  <td>{*n}</td>
-                </tr>
-                <tr>
-                  <td>B<sub>n</sub></td>
-                  <td>{?n}</td>
-                </tr>
-                <tr>
-                  <td>[]</td>
-                  <td>@</td>
-                </tr>
-              </tbody>
-              <thead>
-                <th scope="col">Expressão</th>
-                <th scope="col">Pergunta Correspondente</th>
-              </thead>
-              <tbody>
-                <tr>
-                  <td>¬p</td>
-                  <td>p!</td>
-                </tr>
-                <tr>
-                  <td>p ∧ q</td>
-                  <td>qp^</td>
-                </tr>
-                <tr>
-                  <td>p → q</td>
-                  <td>qp></td>
-                </tr>
-                <tr>
-                  <td>(p ∨ ¬r) → q</td>
-                  <td>qr!pU></td>
-                </tr>
-                <tr>
-                  <td>K<sub>a</sub>(B<sub>b</sub>p)</td>
-                  <td>p{?b}{*a}</td>
-                </tr>
-                <tr>
-                  <td>K<sub>a</sub>p → K<sub>b</sub>(K<sub>c</sub>p)</td>
-                  <td>p{*c}{*b}p{*a}></td>
-                </tr>
-                <tr>
-                  <td>[p]q</td>
-                  <td>qp@</td>
-                </tr>
-                <tr>
-                  <td>[p](p ∧ q)</td>
-                  <td>pq^p@</td>
-                </tr>
-              </tbody>
-            </table>
+              <table class="table border text-center">
+                <thead>
+                  <th scope="col">Operador</th>
+                  <th scope="col">Caractere Correspondente</th>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td>¬</td>
+                    <td>!</td>
+                  </tr>
+                  <tr>
+                    <td>∧</td>
+                    <td>^</td>
+                  </tr>
+                  <tr>
+                    <td>∨</td>
+                    <td>U</td>
+                  </tr>
+                  <tr>
+                    <td>→</td>
+                    <td>></td>
+                  </tr>
+                  <tr>
+                    <td>K<sub>n</sub></td>
+                    <td>{*n}</td>
+                  </tr>
+                  <tr>
+                    <td>B<sub>n</sub></td>
+                    <td>{?n}</td>
+                  </tr>
+                  <tr>
+                    <td>[]</td>
+                    <td>@</td>
+                  </tr>
+                </tbody>
+                <thead>
+                  <th scope="col">Expressão</th>
+                  <th scope="col">Pergunta Correspondente</th>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td>¬p</td>
+                    <td>p!</td>
+                  </tr>
+                  <tr>
+                    <td>p ∧ q</td>
+                    <td>qp^</td>
+                  </tr>
+                  <tr>
+                    <td>p → q</td>
+                    <td>qp></td>
+                  </tr>
+                  <tr>
+                    <td>(p ∨ ¬r) → q</td>
+                    <td>qr!pU></td>
+                  </tr>
+                  <tr>
+                    <td>K<sub>a</sub>(B<sub>b</sub>p)</td>
+                    <td>p{?b}{*a}</td>
+                  </tr>
+                  <tr>
+                    <td>K<sub>a</sub>p → K<sub>b</sub>(K<sub>c</sub>p)</td>
+                    <td>p{*c}{*b}p{*a}></td>
+                  </tr>
+                  <tr>
+                    <td>[p]q</td>
+                    <td>qp@</td>
+                  </tr>
+                  <tr>
+                    <td>[p](p ∧ q)</td>
+                    <td>pq^p@</td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
           </div>
         </div>
-
         <div class="col-9">
-          <h3>Canvas</h3>
+          <h5>Canvas</h5>
           <div id="sketchHolder"></div>
-          <br>
-          <button type="button" data-toggle="collapse" data-target="#canvas-ajuda">Visualizar ajuda</button> 
-          &emsp; <button class="mt-1" onClick="clearCanvas()">Apagar canvas</button>
-          <br>
-          <div id="canvas-ajuda" class="collapse">
-            <br>
-            <small>
-            <b>Criando, apagando e movendo estados</b>
-            <ul>
-              <li>Apertar 's' cria um novo estado na posição atual do cursor do mouse.</li>
-              <li>Apertar 's' enquanto o cursor do mouse está sobre um estado já criado apaga tanto o estado quanto as transições que o tinham como origem ou destino. O mouse está sobre um estado quando a cor do estado se altera (de cinza para rosa).</li>
-              <li>É possível alterar a posição atual de um determinado estado clicando com o botão esquerdo do mouse sobre ele e o arrastando enquanto mantém o botão pressionado.</li>
-            </ul>  
-            <b>Conectando estados</b>
-            <ul>
-              <li>Uma transição entre dois estatos pode ser criada apertando 't' sobre um estado já existente. Em seguida, move-se o mouse até outro estado, que será o estado destino da transição. Quando o mouse atingir o estado destino, é necessário apertar 't' mais uma vez para fixar a transição.</li>
-              <li>Caso tenha-se criado uma transição por engano (foi criada mas ainda não foi fixada), pode-se cancelar o evento apertando 't' novamente enquanto o mouse não estiver sobre nenhum estado (nem mesmo sobre o estado de origem).</li>
-              <li>Uma transição já fixada pode ser apagada ao apertar 't' enquanto o mouse está sobre uma transição. O mouse está sobre uma transição quando a cor da transição se altera (de cinza para rosa).</li>
-            </ul> 
-            <b>Atribuindo labels a estados ou transições</b>
-            <ul>
-              <li>Todo estado e transição já é criado com uma label padrão. No caso de estados é o seu ID e no caso de transições é um texto arbitrário. Essas labels podem ser editadas ao apertar 'w' sobre algum destes elementos.</li>
-              <li>Ao apertar 'w' com o mouse sobre um estado ou transição, o programa entra em modo de escrita, onde todas as teclas de controle são temporariamente desativadas. Deve-se digitar na caixa de texto que surge no topo esquerdo da página a nova label que se deseja atribuir ao elemento. Quando satisfeito, basta apertar no botão 'Submit' que o programa sai de modo de escrita e volta a interpretar determinados caracteres como comandos.</li>
-              <li>Durante modo de escrita, pode-se verificar qual estado ou transição está sendo editado no momento através da cor alaranjada.</li>
-            </ul> 
-            <b>Imprimindo informação sobre o estado atual do programa</b>
-            <ul>
-              <li>Apertar 'i' faz com que o programa imprima informações gerais sobre seu estado atual no console do browser (número de estados, número de transições e os objetos de cada um desses elementos).</li>
-            </ul> 
-            </small>
+          <button class="mt-1" onClick="clearCanvas()">Apagar canvas</button>
+          &emsp;<button type="button" id="btn_canvas" onClick="openCanvasHelpText()">?</button>
+          <div id="modal_canvas" class="modal">
+            <div class="modal-content">
+              <h5>Canvas</h5>
+              <small>
+                <b>Criando, apagando e movendo estados</b>
+                <ul>
+                  <li>Apertar 's' cria um novo estado na posição atual do cursor do mouse.</li>
+                  <li>Apertar 's' enquanto o cursor do mouse está sobre um estado já criado apaga tanto o estado quanto as transições que o tinham como origem ou destino. O mouse está sobre um estado quando a cor do estado se altera (de cinza para rosa).</li>
+                  <li>É possível alterar a posição atual de um determinado estado clicando com o botão esquerdo do mouse sobre ele e o arrastando enquanto mantém o botão pressionado.</li>
+                </ul>  
+                <b>Conectando estados</b>
+                <ul>
+                  <li>Uma transição entre dois estatos pode ser criada apertando 't' sobre um estado já existente. Em seguida, move-se o mouse até outro estado, que será o estado destino da transição. Quando o mouse atingir o estado destino, é necessário apertar 't' mais uma vez para fixar a transição.</li>
+                  <li>Caso tenha-se criado uma transição por engano (foi criada mas ainda não foi fixada), pode-se cancelar o evento apertando 't' novamente enquanto o mouse não estiver sobre nenhum estado (nem mesmo sobre o estado de origem).</li>
+                  <li>Uma transição já fixada pode ser apagada ao apertar 't' enquanto o mouse está sobre uma transição. O mouse está sobre uma transição quando a cor da transição se altera (de cinza para rosa).</li>
+                </ul> 
+                <b>Atribuindo labels a estados ou transições</b>
+                <ul>
+                  <li>Todo estado e transição já é criado com uma label padrão. No caso de estados é o seu ID e no caso de transições é um texto arbitrário. Essas labels podem ser editadas ao apertar 'w' sobre algum destes elementos.</li>
+                  <li>Ao apertar 'w' com o mouse sobre um estado ou transição, o programa entra em modo de escrita, onde todas as teclas de controle são temporariamente desativadas. Deve-se digitar na caixa de texto que surge no topo esquerdo da página a nova label que se deseja atribuir ao elemento. Quando satisfeito, basta apertar no botão 'Submit' que o programa sai de modo de escrita e volta a interpretar determinados caracteres como comandos.</li>
+                  <li>Durante modo de escrita, pode-se verificar qual estado ou transição está sendo editado no momento através da cor alaranjada.</li>
+                </ul> 
+                <b>Imprimindo informação sobre o estado atual do programa</b>
+                <ul>
+                  <li>Apertar 'i' faz com que o programa imprima informações gerais sobre seu estado atual no console do browser (número de estados, número de transições e os objetos de cada um desses elementos).</li>
+                </ul> 
+              </small>
+            </div>
           </div>
         </div>
       </div>
     </div>
+    <script>
+      var modal_pergunta = document.getElementById("modal_pergunta");
+      var modal_canvas = document.getElementById("modal_canvas");
+      var btn = document.getElementById("btn_pergunta");
+      var btn = document.getElementById("btn_canvas");
+      window.onclick = function(event) {
+        if (event.target == modal_pergunta || event.target == modal_canvas) {
+          modal_pergunta.style.display = "none";
+          modal_canvas.style.display = "none";
+        }
+      }
+    </script>
     <!--Lógica do Programa-->
     <script type="text/javascript" src="js/main.js"></script>
     <script src="js/p5js/canvas.js"></script>

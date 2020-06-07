@@ -10,6 +10,7 @@ let writingTransitionText = false;
 let stateRadius = 50;
 let nextCircleID = 0;
 let mouseInsideCanvas = false;
+let knownAgents = ["a","b"];
 
 //lista de estados
 let states = [];
@@ -34,11 +35,9 @@ class myCircle {
 
   display() {
     push();
-
     if (states.indexOf(this) === 0) { //root
       strokeWeight(5);
     }
-
     if (this.editing) {
       stroke(255, 119, 51);
       fill(255, 187, 153);
@@ -88,7 +87,6 @@ class myTransition {
   drawArrow(base, vec, myColor, unfinished) {
     var resultVector = createVector(vec.x - base.x, vec.y - base.y);
     push();
-
     strokeWeight(3);
     if (this.editing) {
       stroke(255, 119, 51);
@@ -97,12 +95,10 @@ class myTransition {
       fill(myColor);
       stroke(myColor);
     } 
-    
     translate(base.x, base.y);
     line(0, 0, resultVector.x, resultVector.y);
     rotate(resultVector.heading());
     let arrowSize = 10;
-
     if (unfinished) {
       translate(resultVector.mag() - arrowSize, 0);
       triangle(0, arrowSize / 2, 0, -arrowSize / 2, arrowSize, 0);
@@ -111,7 +107,6 @@ class myTransition {
       translate(resultVector.mag() - arrowSize - stateRadius, 0);
       noStroke();
     }
-
     pop();
   }
 
@@ -124,9 +119,24 @@ class myTransition {
     stroke(255, 255, 255);
     translate(arrow.x/2, arrow.y/2);
     text(this.agents, 0, 0);
+    //updateKnownAgents(this.agents);
     pop();
   }
 }
+
+////Função pra atualizar automaticamente agentes conhecidos
+// function updateKnownAgents(agents) {
+//   for (let a of agents) {
+//     if (!knownAgents.includes(a)) {
+//       knownAgents.push(a);
+//       for (t of transitions) {
+//         if (t.source === t.target) { 
+//           t.agents = knownAgents;
+//         }
+//       }
+//     }
+//   }
+// }
 
 function setup() {
   var cnv = createCanvas(1280, 720);
@@ -460,6 +470,7 @@ function clearCanvas() {
   states = [];
   transitions = [];
   nextCircleID = 0;
+  knownAgents = [];
 }
 
 //print current states and transitions

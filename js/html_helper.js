@@ -20,7 +20,7 @@ function calculateBasedOnUserInput() {
     output = "✗ Valor indefinido!";
   }
 
-  renderOutput(output);
+  renderOutput(output, 'result');
 }
 
 function updateDatabaseFromCanvas() {
@@ -28,15 +28,31 @@ function updateDatabaseFromCanvas() {
   database.relations = transitions;
 }
 
-function renderOutput(output) {
-  document.getElementById('result').textContent = output;
-  handleFadeInEffect();
+function setAgents() {
+  var agents = document.getElementById('agents').value;
+  knownAgents = agents;
+  renderOutput("✓ [" + knownAgents + "]", 'agents-output');
+}
+
+function renderOutput(output, id) {
+  document.getElementById(id).textContent = output;
+  handleFadeInEffect(id);
 }
 
 // [COSMÉTICO] Função de Fade-in
-function handleFadeInEffect() {
-  document.getElementById('result').className = "";
+function handleFadeInEffect(id) {
+  document.getElementById(id).className = "";
   setTimeout(function() {
-    document.getElementById('result').classList.add("animatee");
+    document.getElementById(id).classList.add("animatee");
   }, 100);
 }
+
+function openQuestionHelpText() {
+  var modal = document.getElementById("modal_pergunta");
+  modal.style.display = "block";
+} 
+
+function openCanvasHelpText() {
+  var modal = document.getElementById("modal_canvas");
+  modal.style.display = "block";
+} 
