@@ -29,7 +29,6 @@ class myCircle {
     this.editing = false;
     this.name = nextCircleID.toString();
     this.id = nextCircleID++;
-    this.text = this.id;
     (variables === null) ? this.variables = ["p", "q"] : this.variables = variables;
   }
 
@@ -63,7 +62,6 @@ class myTransition {
     this.destinyState = destinyState;
     this.hover = false;
     this.editing = false;
-    this.text = 'a,b';
     this.source = originState.name;
     this.agents = ["a", "b"];
     this.sister = sister;
@@ -124,19 +122,14 @@ class myTransition {
   }
 }
 
-////Função pra atualizar automaticamente agentes conhecidos
-// function updateKnownAgents(agents) {
-//   for (let a of agents) {
-//     if (!knownAgents.includes(a)) {
-//       knownAgents.push(a);
-//       for (t of transitions) {
-//         if (t.source === t.target) { 
-//           t.agents = knownAgents;
-//         }
-//       }
-//     }
-//   }
-// }
+// update agents for all self-state transitions
+function updateKnownAgents() {
+  for (let t of transitions) {
+    if (t.source === t.target) {
+      t.agents = knownAgents;
+    }
+  }
+}
 
 function setup() {
   var cnv = createCanvas(1280, 720);
@@ -295,7 +288,6 @@ function editStateText(s) {
 
   button.mousePressed(function() {
     let index = states.indexOf(s);
-    states[index].text = nameInput.value();
     states[index].name = nameInput.value();
     states[index].variables = variablesInput.value().replace(/\s/g,'').split(",");
     states[index].editing = false;
@@ -313,7 +305,7 @@ function editTransitionText(t) {
     t.editing.sister = true;
   }
   writingTransitionText = true;
-  let inp = createInput(t.text);
+  let inp = createInput(t.agents.toString());
   inp.position(200, 50);
   inp.parent("sketchHolder");
 
@@ -323,12 +315,10 @@ function editTransitionText(t) {
 
   button.mousePressed(function() {
     let index = transitions.indexOf(t);
-    transitions[index].text = inp.value();
     transitions[index].agents = inp.value().replace(/\s/g,'').split(",");
     transitions[index].editing = false;
     if (transitions[index].sister !== undefined && transitions[index].sister !== null) {
       let sisterIndex = transitions.indexOf(t.sister);
-      transitions[sisterIndex].text = inp.value();
       transitions[sisterIndex].agents = inp.value().replace(/\s/g,'').split(",");
       transitions[sisterIndex].editing = false;
     }

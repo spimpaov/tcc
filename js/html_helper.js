@@ -31,6 +31,7 @@ function updateDatabaseFromCanvas() {
 function setAgents() {
   var agents = document.getElementById('agents').value;
   knownAgents = agents;
+  updateKnownAgents();
   renderOutput("✓ [" + knownAgents + "]", 'agents-output');
 }
 
