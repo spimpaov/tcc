@@ -3,28 +3,19 @@ let database = {
   // Um estado possui um 'nome' e um conjunto de 'variáveis' que são verdadeiras naquele estado
   "states": [
     {
-      "name": "x",
-      "variables": ["q"]
+      "name": "0",
+      "variables": ["m"]
     }, {
-      "name": "y",
-      "variables": ["p", "q", "r"]
-    }, {
-      "name": "z",
-      "variables": ["p"]
-    }, {
-      "name": "a",
-      "variables": ["p", "q"]
-    }, {
-      "name": "b",
-      "variables": ["p"]
+      "name": "1",
+      "variables": ["m"]
     }
   ],
   // As transições entre estados são definidas por um estado 'origem', um estado 'destino' e um conjunto de 'agentes' referentes àquela transição
   "relations": [
-    {"source": "x", "target": "y", "agents": ["a"]},
-    {"source": "x", "target": "z", "agents": ["a", "b"]},
-    {"source": "y", "target": "a", "agents": ["b"]},
-    {"source": "z", "target": "b", "agents": ["a"]}
+    {"source": "0", "target": "0", "agents": ["a", "b"]},
+    {"source": "0", "target": "1", "agents": ["a", "b"]},
+    {"source": "1", "target": "0", "agents": ["a", "b"]},
+    {"source": "1", "target": "1", "agents": ["a", "b"]}
   ]
 }
 
@@ -219,13 +210,27 @@ function calculate(stack, index, state, valid_states) {
     return {"index": deepest_index, "value": operator.validate_results(operation_results)};
   }
 
+  var agent = "";
+  if (op_string === ')' && index >= 3) {
+    op_string = stack[index - 2];
+    agent = stack[index -1];
+    index -= 3;
+  }
+
+  print("index: " + index + ", op_string: " + op_string);
+  print({"index": index, "value": get_variable_value_at_state(op_string, state, agent)});
+
   // Caso caractere atual não seja um operador, retorna seu valor no estado atual
-  return {"index": index, "value": get_variable_value_at_state(op_string, state)};
+  return {"index": index, "value": get_variable_value_at_state(op_string, state, agent)};
 }
 
 // Determina o valor de uma variável num estado
-function get_variable_value_at_state(op_string, state) {
-  return state.variables.find((f) => f == op_string) != undefined;
+function get_variable_value_at_state(op_string, state, agent) {
+  if (state.knowledge[agent] !== null && state.knowledge[agent] !== undefined) {
+    return state.knowledge[agent].find((f) => f == op_string) != undefined;
+  } else {
+    return false;
+  }
 }
 
 // Determina se string é operador
@@ -312,8 +317,11 @@ function is_valid_expression(expression) {
       if (counter < 0) {
         return false;
       }
+    } else if (op_string === '(') {
+      print(counter);
+      print(expression);
+      counter -= 3;
     }
-
     counter++;
   }
 
