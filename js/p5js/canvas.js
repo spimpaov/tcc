@@ -22,14 +22,22 @@ let transitions = [];
 let arrows = [];
 
 class myCircle {
-  constructor(x, y, variables) {
+  constructor(x, y, knowledge) {
     this.x = x;
     this.y = y;
     this.hover = false;
     this.editing = false;
     this.name = nextCircleID.toString();
     this.id = nextCircleID++;
-    (variables === null) ? this.variables = ["p", "q"] : this.variables = variables;
+    this.knowledge = {};
+    if (knowledge === undefined || knowledge === null) {
+      for (let agent of knownAgents) {
+        this.knowledge[agent] = []
+      }
+    } else {
+      this.knowledge = knowledge;
+    }
+    this.variables = "";
   }
 
   display() {
@@ -49,11 +57,52 @@ class myCircle {
     }
     ellipse(this.x, this.y, 2 * stateRadius);
     pop();
+    push();
     textAlign(CENTER, CENTER);
-    var displayText = this.name + ": [" + this.variables + "]";
     textSize(14);
-    text(displayText, this.x, this.y);
+    text(this.displayText(), this.x, this.y);
+    textStyle(BOLD);
+    text(this.name, this.x - (stateRadius - 5), this.y + (stateRadius - 5));
+    pop();
   }
+
+  displayText() {
+    var displayText = "\n";
+    for (let agent in this.knowledge) {
+      displayText += agent + ": [ ";
+      for (let i = 0; i < this.knowledge[agent].length; i++) {
+        var variable = this.knowledge[agent][i];
+        if (i === this.knowledge[agent].length -1) {
+          displayText += variable + " ";
+        } else {
+          displayText += variable + ", ";
+        }
+      }
+      displayText += "]\n";
+    }
+    return displayText;
+  }
+
+  updateStatesKnownAgents() {
+    print(knownAgents);
+    //adiciona agentes novos com conhecimento vazio
+    for (let agent of knownAgents) {
+      if (!this.knowledge.hasOwnProperty(agent)) {
+        this.knowledge[agent] = [];
+        print("Incluindo: " + agent + ", state: " + this.name);
+      }
+    }
+
+    //remove agentes antigos e seus conhecimentos
+    for (let agent in this.knowledge) {
+      if (!knownAgents.includes(agent)) {
+        delete(this.knowledge[agent]);
+        print("Deletando: " + agent + ", state: " + this.name);
+        print(this.knowledge);
+      }
+    }
+  }
+
 }
 
 class myTransition {
@@ -120,14 +169,23 @@ class myTransition {
     //updateKnownAgents(this.agents);
     pop();
   }
+
+  updateTransitionsKnownAgents() {
+    if (this.source === this.target) {
+      this.agents = knownAgents;
+    } else  {
+      this.agents = this.agents.filter((f) => knownAgents.includes(f));
+    }
+  }
 }
 
 // update agents for all self-state transitions
 function updateKnownAgents() {
   for (let t of transitions) {
-    if (t.source === t.target) {
-      t.agents = knownAgents;
-    }
+    t.updateTransitionsKnownAgents();
+  }
+  for (let s of states) {
+    s.updateStatesKnownAgents();
   }
 }
 
@@ -140,8 +198,8 @@ function setup() {
 }
 
 function createDeafultDatabase() {
-  var s0 = createState(258, 246, []);
-  var s1 = createState(518, 246, ["M"]);
+  var s0 = createState(258, 246, {a:["M"], b:[], c:[]});
+  var s1 = createState(518, 246, {a:["M"], b:["M"], c:[]});
   var t0 = createTransition(s0, s1, null);
   var t1 = createTransition(s1, s0, t0);
   t0.sister = t1;
@@ -472,6 +530,6 @@ function printInfo() {
   print("CurrentTransitions:");
   print(transitions);
   print("Root: " + states[0].id);
-  //print("###############");
-  //print(database);
+  // print("###############");
+  // print(database);
 }
