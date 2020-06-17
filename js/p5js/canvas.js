@@ -332,7 +332,7 @@ function editStateText(s) {
   s.editing = true;
   writingStateText = true;
   let nameInput = createInput(s.name.toString(10));
-  let variablesInput = createInput(s.variables.toString(10));
+  let variablesInput = createInput(JSON.stringify(s.knowledge));
 
   nameInput.position(200, 50);
   nameInput.parent("sketchHolder");
@@ -347,7 +347,7 @@ function editStateText(s) {
   button.mousePressed(function() {
     let index = states.indexOf(s);
     states[index].name = nameInput.value();
-    states[index].variables = variablesInput.value().replace(/\s/g,'').split(",");
+    states[index].knowledge = JSON.parse(variablesInput.value());
     states[index].editing = false;
     writingText = false;
     writingStateText = false;
