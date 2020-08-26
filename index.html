@@ -15,13 +15,16 @@
       <br>
       <div class="row">
         <div class="col-3">
-          <h5>Agentes</h5>
+          <br>
+          <h5>Gerar Grafo</h5>
           <div class="px-1 bg-light">
             <br>
             <input id="agents" type="text" value="a,b">
-            <button class="mt-1" onClick="setAgents()">OK!</button>
             <br>
-            <span id="agents-output"></span>
+            <input id="propositions" type="text" value="p,q,r">
+            <button class="mt-1" onClick="setAgentsAndPropositions()">OK!</button>
+            <br>
+            <span id="create-graph-output"></span>
             <br>
             <br>
           </div>
@@ -176,6 +179,7 @@
     </script>
     <!--Lógica do Programa-->
     <script type="text/javascript" src="js/main.js"></script>
+    <script type="text/javascript" src="js/graph.js"></script>
     <script src="js/p5js/canvas.js"></script>
     <!--Funções Auxiliares de HTML-->
     <script type="text/javascript" src="js/html_helper.js"></script>

@@ -28,11 +28,13 @@ function updateDatabaseFromCanvas() {
   database.relations = transitions;
 }
 
-function setAgents() {
+function setAgentsAndPropositions() {
   var agents = document.getElementById('agents').value;
-  knownAgents = agents.split(",");
-  updateKnownAgents();
-  renderOutput("✓ [" + knownAgents + "]", 'agents-output');
+  var propositions = document.getElementById('propositions').value;
+  agentsList = agents.split(",");
+  propositionsList = propositions.split(",");
+  createGraph(agentsList, propositionsList);
+  renderOutput("✓", 'create-graph-output');
 }
 
 function renderOutput(output, id) {
