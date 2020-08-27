@@ -1,3 +1,5 @@
+let canvasWidth = 1280;
+let canvasHeight = 720;
 let xOffset = 0.0;
 let yOffset = 0.0;
 let locked = false;
@@ -22,22 +24,16 @@ let transitions = [];
 let arrows = [];
 
 class myCircle {
-  constructor(x, y, knowledge) {
+  constructor(x, y, knowledge, name = nextCircleID.toString()) {
     this.x = x;
     this.y = y;
     this.hover = false;
     this.editing = false;
-    this.name = nextCircleID.toString();
-    this.id = nextCircleID++;
-    this.knowledge = {};
-    if (knowledge === undefined || knowledge === null) {
-      for (let agent of knownAgents) {
-        this.knowledge[agent] = []
-      }
-    } else {
-      this.knowledge = knowledge;
+    if (name !== undefined) {
+      this.name = name
     }
-    this.variables = "";
+    this.id = nextCircleID++;
+    this.knowledge = knowledge;
   }
 
   display() {
@@ -60,27 +56,9 @@ class myCircle {
     push();
     textAlign(CENTER, CENTER);
     textSize(14);
-    text(this.displayText(), this.x, this.y);
-    textStyle(BOLD);
-    text(this.name, this.x - (stateRadius - 5), this.y + (stateRadius - 5));
+    var displayText = this.name + ": [" + this.knowledge + "]";
+    text(displayText, this.x, this.y);
     pop();
-  }
-
-  displayText() {
-    var displayText = "\n";
-    for (let agent in this.knowledge) {
-      displayText += agent + ": [ ";
-      for (let i = 0; i < this.knowledge[agent].length; i++) {
-        var variable = this.knowledge[agent][i];
-        if (i === this.knowledge[agent].length -1) {
-          displayText += variable + " ";
-        } else {
-          displayText += variable + ", ";
-        }
-      }
-      displayText += "]\n";
-    }
-    return displayText;
   }
 
   updateStatesKnownAgents() {
@@ -190,16 +168,58 @@ function updateKnownAgents() {
 }
 
 function setup() {
-  var cnv = createCanvas(1280, 720);
+  var cnv = createCanvas(canvasWidth, canvasHeight);
   cnv.parent("sketchHolder");
   rectMode(RADIUS);
-  print(random(50));
   createDeafultDatabase();
 }
 
+function convertDatabaseToCanvasGraph(database) {
+  clearCanvas();
+
+  // cria estados
+  var xOffset = 100;
+  var yOffset = 100;
+  var xJump = 300;
+  var yJump = 300;
+  var xMod = canvasWidth;
+  var linha = 0;
+  database.states.forEach(
+    function (s, i) {
+      var stateXPos = xOffset + (i % xMod)*xJump;
+      if (stateXPos >= canvasWidth - xOffset && xMod === canvasWidth) {
+        xMod = i;
+        stateXPos = xOffset + (i % xMod)*xJump;
+      }
+      if (i != 0 && i % xMod === 0) {
+        linha++;
+      }
+      var stateYPos = yOffset + linha*yJump;
+
+      print("state: " + i + ", [ " + stateXPos + ", " + stateYPos + " ], ");
+      createState(stateXPos, stateYPos, s.variables, s.name);
+    }
+  );
+
+  // cria transições
+  database.relations.forEach(
+    function (r, i) {
+      var sourceState = getStateByID(r.source);
+      var targetState = getStateByID(r.target);
+      if (sourceState !== null && targetState !== null) {
+        var t0 = createTransition(sourceState, targetState, null);
+        var t1 = createTransition(sourceState, targetState, t0)
+        t0.sister = t1;
+      } else {
+        print("Estado de origem/destino não encontrado! ID source: " + r.source + ", ID target: " + r.target);
+      }
+    }
+  );
+}
+
 function createDeafultDatabase() {
-  var s0 = createState(258, 246, {a:["M"], b:[], c:[]});
-  var s1 = createState(518, 246, {a:["M"], b:["M"], c:[]});
+  var s0 = createState(258, 246, ["M"]);
+  var s1 = createState(518, 246, []);
   var t0 = createTransition(s0, s1, null);
   var t1 = createTransition(s1, s0, t0);
   t0.sister = t1;
@@ -280,7 +300,7 @@ function keyTyped() {
     if (touchedState !== null) { //delete state
       deleteState(touchedState);
     } else { //create state
-      createState(mouseX, mouseY, null);
+      createState(mouseX, mouseY, []);
     }
 
   //transition control
@@ -519,6 +539,15 @@ function clearCanvas() {
   transitions = [];
   nextCircleID = 0;
   knownAgents = [];
+}
+
+function getStateByID(id) {
+  for (var s of states) {
+    if (s.id === id) {
+      return s;
+    }
+  }
+  return null;
 }
 
 //print current states and transitions

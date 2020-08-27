@@ -33,7 +33,8 @@ function setAgentsAndPropositions() {
   var propositions = document.getElementById('propositions').value;
   agentsList = agents.split(",");
   propositionsList = propositions.split(",");
-  createGraph(agentsList, propositionsList);
+  var database = createDatabase(agentsList, propositionsList);
+  convertDatabaseToCanvasGraph(database);
   renderOutput("✓", 'create-graph-output');
 }
 

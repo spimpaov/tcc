@@ -1,10 +1,8 @@
-function createGraph(agents, propositions) {
-    // print(num_of_states = 2**propositions.length);
-    // print(num_of_transitions = (num_of_states*(num_of_states -1))/2);
+function createDatabase(agents, propositions) {
     var states =  calculateGraphStates(propositions);
     var relations = calculateGraphRelations(states.length, agents);
-    print(states);
-    print(relations);
+    var database = {states, relations};
+    return database
 }
 
 function calculateGraphStates(propositions) {
