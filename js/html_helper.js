@@ -33,9 +33,18 @@ function setAgentsAndPropositions() {
   var propositions = document.getElementById('propositions').value;
   agentsList = agents.split(",");
   propositionsList = propositions.split(",");
-  var database = createDatabase(agentsList, propositionsList);
-  convertDatabaseToCanvasGraph(database);
+  database = createDatabase(agentsList, propositionsList);
+  convertDatabaseToCanvasGraph();
   renderOutput("✓", 'create-graph-output');
+}
+
+function makeAnnouncement() {
+  var agent = document.getElementById("announcement-agent");
+  var proposition = document.getElementById("announcement-proposition");
+  database = update_database_based_on_announcement(agent, proposition);
+  print(database);
+  // convertDatabaseToCanvasGraph();
+  renderOutput("✓", 'announcement-output');
 }
 
 function renderOutput(output, id) {
@@ -51,12 +60,7 @@ function handleFadeInEffect(id) {
   }, 100);
 }
 
-function openQuestionHelpText() {
-  var modal = document.getElementById("modal_pergunta");
+function openHelpText(id) {
+  var modal = document.getElementById(id);
   modal.style.display = "block";
-} 
-
-function openCanvasHelpText() {
-  var modal = document.getElementById("modal_canvas");
-  modal.style.display = "block";
-} 
+}

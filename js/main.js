@@ -16,7 +16,9 @@ let database = {
     {"source": "0", "target": "1", "agents": ["a", "b"]},
     {"source": "1", "target": "0", "agents": ["a", "b"]},
     {"source": "1", "target": "1", "agents": ["a", "b"]}
-  ]
+  ],
+  "agents": ["a","b"],
+  "propositions": ["m"]
 }
 
 // Classe de 'operador'
@@ -210,24 +212,17 @@ function calculate(stack, index, state, valid_states) {
     return {"index": deepest_index, "value": operator.validate_results(operation_results)};
   }
 
-  var agent = "";
-  if (op_string === ')' && index >= 3) {
-    op_string = stack[index - 2];
-    agent = stack[index -1];
-    index -= 3;
-  }
-
   print("index: " + index + ", op_string: " + op_string);
-  print({"index": index, "value": get_variable_value_at_state(op_string, state, agent)});
+  print({"index": index, "value": get_variable_value_at_state(op_string, state)});
 
   // Caso caractere atual não seja um operador, retorna seu valor no estado atual
-  return {"index": index, "value": get_variable_value_at_state(op_string, state, agent)};
+  return {"index": index, "value": get_variable_value_at_state(op_string, state)};
 }
 
 // Determina o valor de uma variável num estado
-function get_variable_value_at_state(op_string, state, agent) {
-  if (state.knowledge[agent] !== null && state.knowledge[agent] !== undefined) {
-    return state.knowledge[agent].find((f) => f == op_string) != undefined;
+function get_variable_value_at_state(op_string, state) {
+  if (state.knowledge !== null && state.knowledge !== undefined) {
+    return state.knowledge.find((f) => f == op_string) != undefined;
   } else {
     return false;
   }
@@ -301,6 +296,19 @@ function get_first_and_only_result(results) {
   return results[0];
 }
 
+function update_database_based_on_announcement(agent, proposition) {
+//'a' sabe 'p'
+//Para todo s em G:
+//  Para todo vizinho s' de s em G por 'a':
+//    1) Se s.variables não tem 'p' e s'.variables tem 'p'
+//      OU se s.variables tem 'p' e s'.variables não tem 'p':
+//        Corta 'a' da aresta entre s e s'
+//    2) Se s.variables tem 'p' e s'.variables tem 'p':
+//        Faz nada
+//      Else:
+//        Corta 'a' da aresta entre s e s'
+}
+
 // Checa se expressão possui ordem de operandos e operadores válida
 function is_valid_expression(expression) {
   var counter = 0;
@@ -317,10 +325,6 @@ function is_valid_expression(expression) {
       if (counter < 0) {
         return false;
       }
-    } else if (op_string === '(') {
-      print(counter);
-      print(expression);
-      counter -= 3;
     }
     counter++;
   }

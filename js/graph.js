@@ -1,7 +1,7 @@
 function createDatabase(agents, propositions) {
     var states =  calculateGraphStates(propositions);
     var relations = calculateGraphRelations(states.length, agents);
-    var database = {states, relations};
+    var database = {states, relations, agents, propositions};
     return database
 }
 

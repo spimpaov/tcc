@@ -84,13 +84,13 @@ class myCircle {
 }
 
 class myTransition {
-  constructor(originState, destinyState, sister) {
+  constructor(originState, destinyState, sister, agents = database.agents) {
     this.originState = originState;
     this.destinyState = destinyState;
     this.hover = false;
     this.editing = false;
     this.source = originState.name;
-    this.agents = ["a", "b"];
+    this.agents = agents;
     this.sister = sister;
   }
 
@@ -174,7 +174,7 @@ function setup() {
   createDeafultDatabase();
 }
 
-function convertDatabaseToCanvasGraph(database) {
+function convertDatabaseToCanvasGraph() {
   clearCanvas();
 
   // cria estados
@@ -195,8 +195,6 @@ function convertDatabaseToCanvasGraph(database) {
         linha++;
       }
       var stateYPos = yOffset + linha*yJump;
-
-      print("state: " + i + ", [ " + stateXPos + ", " + stateYPos + " ], ");
       createState(stateXPos, stateYPos, s.variables, s.name);
     }
   );
@@ -208,7 +206,7 @@ function convertDatabaseToCanvasGraph(database) {
       var targetState = getStateByID(r.target);
       if (sourceState !== null && targetState !== null) {
         var t0 = createTransition(sourceState, targetState, null);
-        var t1 = createTransition(sourceState, targetState, t0)
+        var t1 = createTransition(targetState, sourceState, t0)
         t0.sister = t1;
       } else {
         print("Estado de origem/destino não encontrado! ID source: " + r.source + ", ID target: " + r.target);
@@ -559,6 +557,6 @@ function printInfo() {
   print("CurrentTransitions:");
   print(transitions);
   print("Root: " + states[0].id);
-  // print("###############");
-  // print(database);
+  print("######Database######");
+  print(database);
 }
