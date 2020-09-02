@@ -24,7 +24,7 @@ let transitions = [];
 let arrows = [];
 
 class myCircle {
-  constructor(x, y, knowledge, name = nextCircleID.toString()) {
+  constructor(x, y, variables, name = nextCircleID.toString()) {
     this.x = x;
     this.y = y;
     this.hover = false;
@@ -33,7 +33,7 @@ class myCircle {
       this.name = name
     }
     this.id = nextCircleID++;
-    this.knowledge = knowledge;
+    this.variables = variables;
   }
 
   display() {
@@ -56,30 +56,30 @@ class myCircle {
     push();
     textAlign(CENTER, CENTER);
     textSize(14);
-    var displayText = this.name + ": [" + this.knowledge + "]";
+    var displayText = this.name + ": [" + this.variables + "]";
     text(displayText, this.x, this.y);
     pop();
   }
 
-  updateStatesKnownAgents() {
-    print(knownAgents);
-    //adiciona agentes novos com conhecimento vazio
-    for (let agent of knownAgents) {
-      if (!this.knowledge.hasOwnProperty(agent)) {
-        this.knowledge[agent] = [];
-        print("Incluindo: " + agent + ", state: " + this.name);
-      }
-    }
-
-    //remove agentes antigos e seus conhecimentos
-    for (let agent in this.knowledge) {
-      if (!knownAgents.includes(agent)) {
-        delete(this.knowledge[agent]);
-        print("Deletando: " + agent + ", state: " + this.name);
-        print(this.knowledge);
-      }
-    }
-  }
+  // updateStatesKnownAgents() {
+  //   print(knownAgents);
+  //   //adiciona agentes novos com conhecimento vazio
+  //   for (let agent of knownAgents) {
+  //     if (!this.variables.hasOwnProperty(agent)) {
+  //       this.variables[agent] = [];
+  //       print("Incluindo: " + agent + ", state: " + this.name);
+  //     }
+  //   }
+  //
+  //   //remove agentes antigos e seus conhecimentos
+  //   for (let agent in this.variables) {
+  //     if (!knownAgents.includes(agent)) {
+  //       delete(this.variables[agent]);
+  //       print("Deletando: " + agent + ", state: " + this.name);
+  //       print(this.variables);
+  //     }
+  //   }
+  // }
 
 }
 
@@ -205,8 +205,8 @@ function convertDatabaseToCanvasGraph() {
       var sourceState = getStateByID(r.source);
       var targetState = getStateByID(r.target);
       if (sourceState !== null && targetState !== null) {
-        var t0 = createTransition(sourceState, targetState, null);
-        var t1 = createTransition(targetState, sourceState, t0)
+        var t0 = createTransition(sourceState, targetState, null, r.agents);
+        var t1 = createTransition(targetState, sourceState, t0, r.agents)
         t0.sister = t1;
       } else {
         print("Estado de origem/destino não encontrado! ID source: " + r.source + ", ID target: " + r.target);
@@ -350,7 +350,7 @@ function editStateText(s) {
   s.editing = true;
   writingStateText = true;
   let nameInput = createInput(s.name.toString(10));
-  let variablesInput = createInput(JSON.stringify(s.knowledge));
+  let variablesInput = createInput(JSON.stringify(s.variables));
 
   nameInput.position(200, 50);
   nameInput.parent("sketchHolder");
@@ -365,7 +365,7 @@ function editStateText(s) {
   button.mousePressed(function() {
     let index = states.indexOf(s);
     states[index].name = nameInput.value();
-    states[index].knowledge = JSON.parse(variablesInput.value());
+    states[index].variables = JSON.parse(variablesInput.value());
     states[index].editing = false;
     writingText = false;
     writingStateText = false;
@@ -488,8 +488,8 @@ function deleteTransition(transition) {
 }
 
 //adds a new transition to transitions array
-function createTransition(origin, destiny, sister) {
-  var transition = new myTransition(origin, destiny, sister);
+function createTransition(origin, destiny, sister, variables) {
+  var transition = new myTransition(origin, destiny, sister, variables);
   transitions.push(transition);
   if (destiny === null) {
     currentTransition = transitions[transitions.length - 1];
@@ -541,7 +541,7 @@ function clearCanvas() {
 
 function getStateByID(id) {
   for (var s of states) {
-    if (s.id === id) {
+    if (s.id == id) {
       return s;
     }
   }

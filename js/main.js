@@ -100,7 +100,7 @@ operators = [
     validate_results = function(r) {
       // Verdadeiro se ao menos um for verdadeiro
       var trues = r.filter((f) => f);
-      return trues.length > 0;      
+      return trues.length > 0;
     },
     length = 1
   ),
@@ -162,18 +162,18 @@ function calculate(stack, index, state, valid_states) {
   // Atualiza o índice da pilha para o fim do operador/operando
   // Necessário pois alguns operadores têm mais de um caractere (como '{?a}'), e portanto o salto do índice é diferente de 1
   index = op_string_obj.new_index;
-  
+
   if (is_operator(op_string)) {
     // Transforma string de operador em objeto 'operator'
     var operator = get_operator(op_string);
-    
+
     var deepest_index = index;
     var operation_results = [];
-    
+
     // Caso operador seja 'anúncio público', é do formato [phi]psi
     if (operator.name == 'PUBLIC ANNOUNCEMENT') {
       var phi_states = [];
-      
+
       // Calcula todos os estados em que phi é verdadeiro
       for (let state of valid_states) {
         var operand = calculate(stack, index - 1, state, valid_states);
@@ -181,11 +181,11 @@ function calculate(stack, index, state, valid_states) {
           phi_states.push(state);
         }
       }
-      
+
       // Estes serão os únicos estados em que o operador poderá ser avaliado
       valid_states = phi_states;
     }
-    
+
     // Obtém os estados sobre os quais o operador operará de fato. Subconjunto de phi_states
     var states_to_check = operator.get_states_to_check(state, operator.get_agent(op_string), valid_states);
 
@@ -193,7 +193,7 @@ function calculate(stack, index, state, valid_states) {
     for (let state_to_check of states_to_check) {
       var operands = []
       var last_index = index;
-      
+
       // Para cada operando esperado pelo operador, calcula o valor da pilha naquele índice
       for (var i = 0; i < operator.length; i++) {
         var operand = calculate(stack, last_index - 1, state_to_check, valid_states);
@@ -263,7 +263,7 @@ function get_op_string(array, index, forwards = true) {
       index = index_start_char;
     }
   }
-  
+
   op_string = array.slice(index_start_char, index_end_char + 1).join("");
   return {"op_string": op_string, "new_index": index};
 }
@@ -281,7 +281,7 @@ function get_current_state(current_state, agent, valid_states) {
 // Retorna estados que são vizinhos do estado atual por transição do agente 'agent'
 function get_all_state_neighbors(current_state, agent, valid_states) {
   return database.relations
-    .filter((f) => f.source == current_state.name 
+    .filter((f) => f.source == current_state.name
       && f.agents.includes(agent)
       && valid_states.map((s) => s.name).includes(f.target))
     .map((f) => get_state_by_name(f.target));
@@ -296,6 +296,30 @@ function get_first_and_only_result(results) {
   return results[0];
 }
 
+// Retorna array com o par de transições irmãs (source->target e target->source)
+function get_symmetric_transition(sourceName, targetName) {
+  var t = [];
+  for (let i = 0; i < database.relations.length; i++) {
+    if ((database.relations[i].source === sourceName && database.relations[i].target === targetName)
+      || (database.relations[i].source === targetName && database.relations[i].target === sourceName)) {
+        t.push(database.relations[i]);
+    }
+  }
+  return t;
+}
+
+// Deleta um agente de uma transição e apaga a transição se o array de agentes dela ficar vazio
+function delete_transition_from_database(index, agent) {
+  let index_of_agent = database.relations[index].agents.indexOf(agent);
+  if (index_of_agent > -1) {
+    database.relations[index].agents = database.relations[index].agents.filter(f => f != agent);
+  }
+  for (r of database.relations) {
+    database.relations = database.relations.filter(f => f.agents.length !== 0);
+  }
+}
+
+// Apaga transições de acordo com o anúncio privado feito
 function update_database_based_on_announcement(agent, proposition) {
 //'a' sabe 'p'
 //Para todo s em G:
@@ -307,6 +331,25 @@ function update_database_based_on_announcement(agent, proposition) {
 //        Faz nada
 //      Else:
 //        Corta 'a' da aresta entre s e s'
+
+// deve-se cortar arestas de um estado para si mesmo?
+
+var marked = [];
+  for (let s of database.states) {
+    var s_neighbors = get_all_state_neighbors(s, agent, database.states);
+    for (let n of s_neighbors) {
+      if ((!s.variables.includes(proposition) && n.variables.includes(proposition))
+        || s.variables.includes(proposition) && !n.variables.includes(proposition)) {
+          marked.push(...get_symmetric_transition(s.name, n.name));
+      }
+    }
+  }
+  for (t of marked) {
+    var t_index = database.relations.indexOf(t);
+    if (t_index > -1) {
+      delete_transition_from_database(t_index, agent);
+    }
+  }
 }
 
 // Checa se expressão possui ordem de operandos e operadores válida
@@ -317,11 +360,11 @@ function is_valid_expression(expression) {
     var op_string_obj = get_op_string(expression, i, forwards = true);
     var op_string = op_string_obj.op_string;
     i = op_string_obj.new_index;
-    
+
     if (is_operator(op_string)) {
       var operator = get_operator(op_string);
       counter -= operator.length;
-      
+
       if (counter < 0) {
         return false;
       }

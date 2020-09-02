@@ -25,25 +25,32 @@ function calculateBasedOnUserInput() {
 
 function updateDatabaseFromCanvas() {
   database.states = states;
-  database.relations = transitions;
+  new_relations = [];
+  for (t of transitions) {
+    if (database.relations.find((f) => f.source == t.target && f.target == t.source) === undefined
+      && t.sister !== undefined) {
+      new_relations.push(t);
+    }
+  }
+  database.relations = new_relations;
 }
 
 function setAgentsAndPropositions() {
   var agents = document.getElementById('agents').value;
   var propositions = document.getElementById('propositions').value;
-  agentsList = agents.split(",");
-  propositionsList = propositions.split(",");
+  var agentsList = agents.split(",");
+  var propositionsList = propositions.split(",");
   database = createDatabase(agentsList, propositionsList);
   convertDatabaseToCanvasGraph();
   renderOutput("✓", 'create-graph-output');
 }
 
 function makeAnnouncement() {
-  var agent = document.getElementById("announcement-agent");
-  var proposition = document.getElementById("announcement-proposition");
-  database = update_database_based_on_announcement(agent, proposition);
-  print(database);
-  // convertDatabaseToCanvasGraph();
+  var agent = document.getElementById("announcement-agent").value;
+  var proposition = document.getElementById("announcement-proposition").value;
+  updateDatabaseFromCanvas();
+  update_database_based_on_announcement(agent, proposition);
+  convertDatabaseToCanvasGraph();
   renderOutput("✓", 'announcement-output');
 }
 
