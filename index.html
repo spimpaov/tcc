@@ -7,7 +7,12 @@
   <script src="https://cdnjs.cloudflare.com/ajax/libs/p5.js/0.10.2/p5.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/p5.js/0.10.2/addons/p5.sound.min.js"></script>
   <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js" integrity="sha384-JjSmVgyd0p3pXB1rRibZUAYoIIy6OrQ6VrjIEaFf/nJGzIxFDsf4x0xIM+B07jRM" crossorigin="anonymous"></script>
-    <title>Verificador de Lógica Epistêmica</title>
+  <script src="https://cdn.jsdelivr.net/npm/lodash@4.17.20/lodash.min.js" integrity="sha256-ur/YlHMU96MxHEsy3fHGszZHas7NzH4RQlD4tDVvFhw=" crossorigin="anonymous"></script>
+  <script>
+    lodash = _.noConflict();
+  </script>
+
+  <title>Verificador de Lógica Epistêmica</title>
   </head>
   <body>
     <div class="p-2">
@@ -36,6 +41,8 @@
             <br>
             <span id="announcement-output"></span>
             <br>
+            <br>
+            <span id="announcement-history"></span>
             <br>
           </div>
           <br>

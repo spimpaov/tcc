@@ -1,3 +1,6 @@
+var announcementHistory = [];
+// var currentPosInTimeline = 0;
+
 // [INPUT] Calcula a expressão definida em $("#input")
 function calculateBasedOnUserInput() {
   updateDatabaseFromCanvas();
@@ -41,6 +44,7 @@ function setAgentsAndPropositions() {
   var agentsList = agents.split(",");
   var propositionsList = propositions.split(",");
   database = createDatabase(agentsList, propositionsList);
+  updateAnnouncementHistory(true);
   convertDatabaseToCanvasGraph();
   renderOutput("✓", 'create-graph-output');
 }
@@ -50,8 +54,42 @@ function makeAnnouncement() {
   var proposition = document.getElementById("announcement-proposition").value;
   updateDatabaseFromCanvas();
   update_database_based_on_announcement(agent, proposition);
+  updateAnnouncementHistory();
   convertDatabaseToCanvasGraph();
   renderOutput("✓", 'announcement-output');
+}
+
+function updateAnnouncementHistory(reset = false) {
+  if (reset) {
+    announcementHistory = [];
+    var timeline = document.getElementById("announcement-history");
+    while (timeline.firstChild) {
+      timeline.removeChild(timeline.lastChild);
+    }
+  }
+  var new_database = lodash.cloneDeep(database);
+  var historyIndex = announcementHistory.push(new_database) - 1;
+  // if (currentPosInTimeline + 1 < historyIndex) {
+  //   currentPosInTimeline++;
+  //   //TODO: remover elementos do announcementHistory com indice maior que currentPosInTime
+  //   //TODO: remover botoes da timeline com indice maior que currentPosInTime
+  // } else {
+  //   currentPosInTimeline = historyIndex;
+  // }
+  // print(currentPosInTimeline);
+  addButtonToAnnouncementTimeLine(historyIndex);
+}
+
+function addButtonToAnnouncementTimeLine(index) {
+  var btn = document.createElement("BUTTON");
+  btn.addEventListener('click', function() {
+    database = announcementHistory[index];
+    // currentPosInTimeline = index;
+    // print(currentPosInTimeline);
+    convertDatabaseToCanvasGraph();
+  }, false);
+  btn.innerHTML = index;
+  document.getElementById("announcement-history").appendChild(btn);
 }
 
 function renderOutput(output, id) {
