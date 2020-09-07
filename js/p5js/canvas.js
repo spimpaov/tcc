@@ -510,11 +510,12 @@ function deleteTransitionDuplicates(t) {
 }
 
 //empty all states and transitions arrays
-function clearCanvas() {
+function clearCanvas(clearTimeline = false) {
   states = [];
   transitions = [];
   nextCircleID = 0;
   knownAgents = [];
+  if (clearTimeline) clearAnnouncementTimeline();
 }
 
 function getStateByID(id) {
