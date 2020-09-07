@@ -45,11 +45,7 @@ function setAgentsAndPropositions() {
 function makeAnnouncement() {
   var agent = document.getElementById("announcement-agent").value;
   var proposition = document.getElementById("announcement-proposition").value;
-  print("1");
-  print(database);
   updateDatabaseFromCanvas();
-  print("2");
-  print(database);
   update_database_based_on_announcement(agent, proposition);
   var resetToPos = (announcementHistory.length !== currentTimelineIndex) ? currentTimelineIndex : -1;
   updateAnnouncementHistory(agent, proposition, resetToPos);
