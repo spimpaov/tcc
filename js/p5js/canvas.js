@@ -165,15 +165,15 @@ function convertDatabaseToCanvasGraph() {
   var linha = 0;
   database.states.forEach(
     function (s, i) {
-      var stateXPos = xOffset + (i % xMod)*xJump;
+      var stateXPos = (s.x === undefined) ? xOffset + (i % xMod)*xJump : s.x;
       if (stateXPos >= canvasWidth - xOffset && xMod === canvasWidth) {
         xMod = i;
-        stateXPos = xOffset + (i % xMod)*xJump;
+        stateXPos = (s.x === undefined) ? xOffset + (i % xMod)*xJump : s.x;
       }
       if (i != 0 && i % xMod === 0) {
         linha++;
       }
-      var stateYPos = yOffset + linha*yJump;
+      var stateYPos = (s.y === undefined) ? yOffset + linha*yJump : s.y;
       createState(stateXPos, stateYPos, s.variables, s.name);
     }
   );
