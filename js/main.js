@@ -221,8 +221,8 @@ function calculate(stack, index, state, valid_states) {
 
 // Determina o valor de uma variável num estado
 function get_variable_value_at_state(op_string, state) {
-  if (state.knowledge !== null && state.knowledge !== undefined) {
-    return state.knowledge.find((f) => f == op_string) != undefined;
+  if (state.variables !== null && state.variables !== undefined) {
+    return state.variables.find((f) => f == op_string) != undefined;
   } else {
     return false;
   }
