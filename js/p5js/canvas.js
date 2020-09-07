@@ -60,27 +60,6 @@ class myCircle {
     text(displayText, this.x, this.y);
     pop();
   }
-
-  // updateStatesKnownAgents() {
-  //   print(knownAgents);
-  //   //adiciona agentes novos com conhecimento vazio
-  //   for (let agent of knownAgents) {
-  //     if (!this.variables.hasOwnProperty(agent)) {
-  //       this.variables[agent] = [];
-  //       print("Incluindo: " + agent + ", state: " + this.name);
-  //     }
-  //   }
-  //
-  //   //remove agentes antigos e seus conhecimentos
-  //   for (let agent in this.variables) {
-  //     if (!knownAgents.includes(agent)) {
-  //       delete(this.variables[agent]);
-  //       print("Deletando: " + agent + ", state: " + this.name);
-  //       print(this.variables);
-  //     }
-  //   }
-  // }
-
 }
 
 class myTransition {
@@ -200,17 +179,16 @@ function convertDatabaseToCanvasGraph() {
   );
 
   // cria transições
+  var new_relations = [];
   database.relations.forEach(
     function (r, i) {
       var sourceState = getStateByID(r.source);
       var targetState = getStateByID(r.target);
-      if (sourceState !== null && targetState !== null) {
-        var t0 = createTransition(sourceState, targetState, null, r.agents);
-        var t1 = createTransition(targetState, sourceState, t0, r.agents)
-        t0.sister = t1;
-      } else {
-        print("Estado de origem/destino não encontrado! ID source: " + r.source + ", ID target: " + r.target);
-      }
+      if (sourceState !== null && targetState !== null && sourceState.id !== targetState.id) {
+        var sister = new_relations.find((f) => f.source == r.target && f.target == r.source);
+        new_relations.push(r);
+        createTransition(sourceState, targetState, sister, r.agents);
+      } 
     }
   );
 }

@@ -321,20 +321,7 @@ function delete_transition_from_database(index, agent) {
 
 // Apaga transições de acordo com o anúncio privado feito
 function update_database_based_on_announcement(agent, proposition) {
-//'a' sabe 'p'
-//Para todo s em G:
-//  Para todo vizinho s' de s em G por 'a':
-//    1) Se s.variables não tem 'p' e s'.variables tem 'p'
-//      OU se s.variables tem 'p' e s'.variables não tem 'p':
-//        Corta 'a' da aresta entre s e s'
-//    2) Se s.variables tem 'p' e s'.variables tem 'p':
-//        Faz nada
-//      Else:
-//        Corta 'a' da aresta entre s e s'
-
-// deve-se cortar arestas de um estado para si mesmo?
-
-var marked = [];
+  var marked = [];
   for (let s of database.states) {
     var s_neighbors = get_all_state_neighbors(s, agent, database.states);
     for (let n of s_neighbors) {

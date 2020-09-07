@@ -37,6 +37,11 @@ function calculateGraphRelations (numOfStates, agents) {
                 "target": j, 
                 "agents": agents,
             });
+            graphRelations.push({
+                "source": j, 
+                "target": i, 
+                "agents": agents,
+            });
         }
     }
     return graphRelations;

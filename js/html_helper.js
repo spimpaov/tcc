@@ -28,14 +28,7 @@ function calculateBasedOnUserInput() {
 
 function updateDatabaseFromCanvas() {
   database.states = states;
-  new_relations = [];
-  for (t of transitions) {
-    if (new_relations.find((f) => f.source == t.target && f.target == t.source) === undefined
-      && t.sister !== undefined) {
-      new_relations.push(t);
-    }
-  }
-  database.relations = new_relations;
+  database.relations = transitions;
 }
 
 function setAgentsAndPropositions() {
@@ -100,7 +93,7 @@ function addButtonToAnnouncementTimeLine(agent, proposition) {
   if (agent === null && proposition === null) {
     btn.innerHTML = "grafo inicial";
   } else {
-    btn.innerHTML = agent + " sabe " + proposition;
+    btn.innerHTML = agent + " aprende " + proposition;
   }
 }
 
