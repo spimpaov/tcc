@@ -30,7 +30,7 @@ function updateDatabaseFromCanvas() {
   database.states = states;
   new_relations = [];
   for (t of transitions) {
-    if (database.relations.find((f) => f.source == t.target && f.target == t.source) === undefined
+    if (new_relations.find((f) => f.source == t.target && f.target == t.source) === undefined
       && t.sister !== undefined) {
       new_relations.push(t);
     }
@@ -52,7 +52,11 @@ function setAgentsAndPropositions() {
 function makeAnnouncement() {
   var agent = document.getElementById("announcement-agent").value;
   var proposition = document.getElementById("announcement-proposition").value;
+  print("1");
+  print(database);
   updateDatabaseFromCanvas();
+  print("2");
+  print(database);
   update_database_based_on_announcement(agent, proposition);
   var resetToPos = (announcementHistory.length !== currentTimelineIndex) ? currentTimelineIndex : -1;
   updateAnnouncementHistory(agent, proposition, resetToPos);
