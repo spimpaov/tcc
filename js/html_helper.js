@@ -102,6 +102,15 @@ function clearAnnouncementTimeline() {
   }
 }
 
+function setEncryptAndDecryptFunctions() {
+  var exInput = document.getElementById("ex-input");
+  var exOutput = document.getElementById("ex-output");
+  var dxInput = document.getElementById("dx-input");
+  var dxOutput = document.getElementById("dx-output");
+
+  renderOutput("✓", 'ex-dx-output');
+}
+
 function renderOutput(output, id) {
   document.getElementById(id).textContent = output;
   handleFadeInEffect(id);
