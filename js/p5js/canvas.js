@@ -56,8 +56,9 @@ class myCircle {
     push();
     textAlign(CENTER, CENTER);
     textSize(14);
-    var displayText = this.name + ": [" + this.variables + "]";
-    text(displayText, this.x, this.y);
+    rectMode(CENTER);
+    var displayText = this.name + ": [ " + this.variables.join(", ") + " ]";
+    text(displayText, this.x, this.y, stateRadius*2, stateRadius*2);
     pop();
   }
 }
@@ -122,26 +123,7 @@ class myTransition {
     stroke(255, 255, 255);
     translate(arrow.x/2, arrow.y/2);
     text(this.agents, 0, 0);
-    //updateKnownAgents(this.agents);
     pop();
-  }
-
-  updateTransitionsKnownAgents() {
-    if (this.source === this.target) {
-      this.agents = knownAgents;
-    } else  {
-      this.agents = this.agents.filter((f) => knownAgents.includes(f));
-    }
-  }
-}
-
-// update agents for all self-state transitions
-function updateKnownAgents() {
-  for (let t of transitions) {
-    t.updateTransitionsKnownAgents();
-  }
-  for (let s of states) {
-    s.updateStatesKnownAgents();
   }
 }
 
@@ -251,7 +233,6 @@ function draw() {
     text('Agentes:', 195, 70);
     pop();
   }
-
 }
 
 //check for any keyboard input
@@ -504,7 +485,6 @@ function clearCanvas(clearTimeline = false) {
   states = [];
   transitions = [];
   nextCircleID = 0;
-  knownAgents = [];
   if (clearTimeline) clearAnnouncementTimeline();
 }
 
