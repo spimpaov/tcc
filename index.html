@@ -1,3 +1,8 @@
+<!-- <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+"http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd"
+[
+  <!ATTLIST tag myAttri CDATA #IMPLIED>
+]> -->
 <head>
   <meta charset="UTF-8">
   <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
@@ -33,21 +38,14 @@
             <br>
           </div>
           <br>
-          <div class="px-1 bg-light">
-            <h5>Função de encriptação</h5>
-            &emsp;Entrada: <input id="ex-input" type="text" value="M,x">
-            <br>
-            &emsp;Saída: <input id="ex-output" type="text" value="Ex(M)">
+          <div class="px-1 bg-light" id="">
+            <h5>Conhecimento inicial</h5>
+            <span id="initial-db-inputs"></span>
             <br><br>
-            <h5>Função de decriptação</h5>
-            &emsp;Entrada: <input id="dx-input" type="text" value="Ex(M)">
+            <button class="mt-1" onClick="setInitialDatabase()">OK!</button>
             <br>
-            &emsp;Saída: <input id="dx-output" type="text" value="M">
+            <span id="initial-db-output"></span>
             <br>
-            <button class="mt-1" onClick="setEncryptAndDecryptFunctions()">OK!</button>
-            <br>
-            <span id="ex-dx-output"></span>
-            <br><br>
           </div>
           <br>
           <div class="px-1 bg-light">
@@ -175,7 +173,7 @@
         <div class="col-9">
           <h5>Canvas</h5>
           <div id="sketchHolder"></div>
-          <button class="mt-1" onClick="clearCanvas('true')">Apagar canvas</button>
+          <button class="mt-1" onClick="clearCanvas('true','true')">Apagar canvas</button>
           &emsp;<button type="button" id="btn_canvas" onClick="openHelpText('modal_canvas')">?</button>
           <div id="modal_canvas" class="modal">
             <div class="modal-content">

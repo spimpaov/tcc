@@ -352,6 +352,15 @@ function update_database_based_on_announcement(agent, proposition) {
   }
 }
 
+// Atualiza o grafo baseado num anúncio privado feito
+function private_announcement(agent, proposition) {
+  updateDatabaseFromCanvas();
+  update_database_based_on_announcement(agent, proposition);
+  var resetToPos = (announcementHistory.length !== currentTimelineIndex) ? currentTimelineIndex : -1;
+  updateAnnouncementHistory(agent, proposition, resetToPos);
+  convertDatabaseToCanvasGraph();
+}
+
 // Checa se expressão possui ordem de operandos e operadores válida
 function is_valid_expression(expression) {
   var counter = 0;

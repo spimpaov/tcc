@@ -37,17 +37,14 @@ function setAgentsAndPropositions() {
   database = createDatabase(agentsList, propositionsList);
   updateAnnouncementHistory(null, null, 0);
   convertDatabaseToCanvasGraph();
+  createInitialDBTextInput(agentsList);
   renderOutput("✓", 'create-graph-output');
 }
 
 function makeAnnouncement() {
   var agent = document.getElementById("announcement-agent").value;
   var proposition = document.getElementById("announcement-proposition").value;
-  updateDatabaseFromCanvas();
-  update_database_based_on_announcement(agent, proposition);
-  var resetToPos = (announcementHistory.length !== currentTimelineIndex) ? currentTimelineIndex : -1;
-  updateAnnouncementHistory(agent, proposition, resetToPos);
-  convertDatabaseToCanvasGraph();
+  private_announcement(agent, proposition);
   renderOutput("✓", 'announcement-output');
 }
 
@@ -99,13 +96,39 @@ function clearAnnouncementTimeline() {
   }
 }
 
-function setEncryptAndDecryptFunctions() {
-  var exInput = document.getElementById("ex-input");
-  var exOutput = document.getElementById("ex-output");
-  var dxInput = document.getElementById("dx-input");
-  var dxOutput = document.getElementById("dx-output");
+function createInitialDBTextInput(agents) {
+  clearInitialDatabase();
+  var initialDBInputs = document.getElementById("initial-db-inputs");
+  for (var agent of agents) {
+    var agentSpan = document.createElement('span');
+    agentSpan.innerHTML = "<br>" + agent + ": ";
+    agentSpan.agent = agent;
+    initialDBInputs.appendChild(agentSpan);
 
-  renderOutput("✓", 'ex-dx-output');
+    var agentInput = document.createElement('input');
+    agentInput.type = 'text';
+    agentInput.id = 'initial-db-' + agent;
+    agentInput.value = '{M}{E' + agent + '(M)}>';
+    agentSpan.appendChild(agentInput);
+  }
+}
+
+function setInitialDatabase() {
+  var initialDBInputs = document.getElementById("initial-db-inputs");
+  for (var agentSpan of initialDBInputs.childNodes) {
+    var agentDB = agentSpan.lastChild.value.replace(/\s/g,'').split(",");
+    for (var proposition of agentDB) {
+      private_announcement(agentSpan.agent, proposition);
+    }
+  }
+  renderOutput("✓", 'initial-db-output');
+}
+
+function clearInitialDatabase() {
+  var initialDBInputs = document.getElementById("initial-db-inputs");
+  while (initialDBInputs.lastChild) {
+    initialDBInputs.removeChild(initialDBInputs.lastChild);
+  }
 }
 
 function renderOutput(output, id) {
