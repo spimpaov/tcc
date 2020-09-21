@@ -1,3 +1,5 @@
+let canvasWidth = 1280;
+let canvasHeight = 720;
 let xOffset = 0.0;
 let yOffset = 0.0;
 let locked = false;
@@ -22,22 +24,16 @@ let transitions = [];
 let arrows = [];
 
 class myCircle {
-  constructor(x, y, knowledge) {
+  constructor(x, y, variables, name = nextCircleID.toString()) {
     this.x = x;
     this.y = y;
     this.hover = false;
     this.editing = false;
-    this.name = nextCircleID.toString();
-    this.id = nextCircleID++;
-    this.knowledge = {};
-    if (knowledge === undefined || knowledge === null) {
-      for (let agent of knownAgents) {
-        this.knowledge[agent] = []
-      }
-    } else {
-      this.knowledge = knowledge;
+    if (name !== undefined) {
+      this.name = name
     }
-    this.variables = "";
+    this.id = nextCircleID++;
+    this.variables = variables;
   }
 
   display() {
@@ -60,59 +56,20 @@ class myCircle {
     push();
     textAlign(CENTER, CENTER);
     textSize(14);
-    text(this.displayText(), this.x, this.y);
-    textStyle(BOLD);
-    text(this.name, this.x - (stateRadius - 5), this.y + (stateRadius - 5));
+    var displayText = this.name + ": [" + this.variables + "]";
+    text(displayText, this.x, this.y);
     pop();
   }
-
-  displayText() {
-    var displayText = "\n";
-    for (let agent in this.knowledge) {
-      displayText += agent + ": [ ";
-      for (let i = 0; i < this.knowledge[agent].length; i++) {
-        var variable = this.knowledge[agent][i];
-        if (i === this.knowledge[agent].length -1) {
-          displayText += variable + " ";
-        } else {
-          displayText += variable + ", ";
-        }
-      }
-      displayText += "]\n";
-    }
-    return displayText;
-  }
-
-  updateStatesKnownAgents() {
-    print(knownAgents);
-    //adiciona agentes novos com conhecimento vazio
-    for (let agent of knownAgents) {
-      if (!this.knowledge.hasOwnProperty(agent)) {
-        this.knowledge[agent] = [];
-        print("Incluindo: " + agent + ", state: " + this.name);
-      }
-    }
-
-    //remove agentes antigos e seus conhecimentos
-    for (let agent in this.knowledge) {
-      if (!knownAgents.includes(agent)) {
-        delete(this.knowledge[agent]);
-        print("Deletando: " + agent + ", state: " + this.name);
-        print(this.knowledge);
-      }
-    }
-  }
-
 }
 
 class myTransition {
-  constructor(originState, destinyState, sister) {
+  constructor(originState, destinyState, sister, agents = database.agents) {
     this.originState = originState;
     this.destinyState = destinyState;
     this.hover = false;
     this.editing = false;
     this.source = originState.name;
-    this.agents = ["a", "b"];
+    this.agents = agents;
     this.sister = sister;
   }
 
@@ -190,16 +147,55 @@ function updateKnownAgents() {
 }
 
 function setup() {
-  var cnv = createCanvas(1280, 720);
+  var cnv = createCanvas(canvasWidth, canvasHeight);
   cnv.parent("sketchHolder");
   rectMode(RADIUS);
-  print(random(50));
   createDeafultDatabase();
 }
 
+function convertDatabaseToCanvasGraph() {
+  clearCanvas();
+
+  // cria estados
+  var xOffset = 100;
+  var yOffset = 100;
+  var xJump = 300;
+  var yJump = 300;
+  var xMod = canvasWidth;
+  var linha = 0;
+  database.states.forEach(
+    function (s, i) {
+      var stateXPos = (s.x === undefined) ? xOffset + (i % xMod)*xJump : s.x;
+      if (stateXPos >= canvasWidth - xOffset && xMod === canvasWidth) {
+        xMod = i;
+        stateXPos = (s.x === undefined) ? xOffset + (i % xMod)*xJump : s.x;
+      }
+      if (i != 0 && i % xMod === 0) {
+        linha++;
+      }
+      var stateYPos = (s.y === undefined) ? yOffset + linha*yJump : s.y;
+      createState(stateXPos, stateYPos, s.variables, s.name);
+    }
+  );
+
+  // cria transições
+  var new_relations = [];
+  database.relations.forEach(
+    function (r, i) {
+      var sourceState = getStateByID(r.source);
+      var targetState = getStateByID(r.target);
+      if (sourceState !== null && targetState !== null && sourceState.id !== targetState.id) {
+        var sister = new_relations.find((f) => f.source == r.target && f.target == r.source);
+        new_relations.push(r);
+        createTransition(sourceState, targetState, sister, r.agents);
+      } 
+    }
+  );
+}
+
 function createDeafultDatabase() {
-  var s0 = createState(258, 246, {a:["M"], b:[], c:[]});
-  var s1 = createState(518, 246, {a:["M"], b:["M"], c:[]});
+  var s0 = createState(258, 246, ["M"]);
+  var s1 = createState(518, 246, []);
   var t0 = createTransition(s0, s1, null);
   var t1 = createTransition(s1, s0, t0);
   t0.sister = t1;
@@ -280,7 +276,7 @@ function keyTyped() {
     if (touchedState !== null) { //delete state
       deleteState(touchedState);
     } else { //create state
-      createState(mouseX, mouseY, null);
+      createState(mouseX, mouseY, []);
     }
 
   //transition control
@@ -332,7 +328,7 @@ function editStateText(s) {
   s.editing = true;
   writingStateText = true;
   let nameInput = createInput(s.name.toString(10));
-  let variablesInput = createInput(JSON.stringify(s.knowledge));
+  let variablesInput = createInput(JSON.stringify(s.variables));
 
   nameInput.position(200, 50);
   nameInput.parent("sketchHolder");
@@ -347,7 +343,7 @@ function editStateText(s) {
   button.mousePressed(function() {
     let index = states.indexOf(s);
     states[index].name = nameInput.value();
-    states[index].knowledge = JSON.parse(variablesInput.value());
+    states[index].variables = JSON.parse(variablesInput.value());
     states[index].editing = false;
     writingText = false;
     writingStateText = false;
@@ -470,8 +466,8 @@ function deleteTransition(transition) {
 }
 
 //adds a new transition to transitions array
-function createTransition(origin, destiny, sister) {
-  var transition = new myTransition(origin, destiny, sister);
+function createTransition(origin, destiny, sister, variables) {
+  var transition = new myTransition(origin, destiny, sister, variables);
   transitions.push(transition);
   if (destiny === null) {
     currentTransition = transitions[transitions.length - 1];
@@ -514,11 +510,21 @@ function deleteTransitionDuplicates(t) {
 }
 
 //empty all states and transitions arrays
-function clearCanvas() {
+function clearCanvas(clearTimeline = false) {
   states = [];
   transitions = [];
   nextCircleID = 0;
   knownAgents = [];
+  if (clearTimeline) clearAnnouncementTimeline();
+}
+
+function getStateByID(id) {
+  for (var s of states) {
+    if (s.id == id) {
+      return s;
+    }
+  }
+  return null;
 }
 
 //print current states and transitions
@@ -530,6 +536,6 @@ function printInfo() {
   print("CurrentTransitions:");
   print(transitions);
   print("Root: " + states[0].id);
-  // print("###############");
-  // print(database);
+  print("######Database######");
+  print(database);
 }

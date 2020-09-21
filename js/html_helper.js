@@ -1,3 +1,6 @@
+var announcementHistory = [];
+var currentTimelineIndex = 0;
+
 // [INPUT] Calcula a expressão definida em $("#input")
 function calculateBasedOnUserInput() {
   updateDatabaseFromCanvas();
@@ -28,11 +31,75 @@ function updateDatabaseFromCanvas() {
   database.relations = transitions;
 }
 
-function setAgents() {
+function setAgentsAndPropositions() {
   var agents = document.getElementById('agents').value;
-  knownAgents = agents.split(",");
-  updateKnownAgents();
-  renderOutput("✓ [" + knownAgents + "]", 'agents-output');
+  var propositions = document.getElementById('propositions').value;
+  var agentsList = agents.split(",");
+  var propositionsList = propositions.split(",");
+  database = createDatabase(agentsList, propositionsList);
+  updateAnnouncementHistory(null, null, 0);
+  convertDatabaseToCanvasGraph();
+  renderOutput("✓", 'create-graph-output');
+}
+
+function makeAnnouncement() {
+  var agent = document.getElementById("announcement-agent").value;
+  var proposition = document.getElementById("announcement-proposition").value;
+  updateDatabaseFromCanvas();
+  update_database_based_on_announcement(agent, proposition);
+  var resetToPos = (announcementHistory.length !== currentTimelineIndex) ? currentTimelineIndex : -1;
+  updateAnnouncementHistory(agent, proposition, resetToPos);
+  convertDatabaseToCanvasGraph();
+  renderOutput("✓", 'announcement-output');
+}
+
+function updateAnnouncementHistory(agent, proposition, resetToPos = -1) {
+  if (resetToPos !== -1) {
+    var timeline = document.getElementById("announcement-history-ol");
+    for (var i = announcementHistory.length-1; i >= resetToPos; i--) {
+      announcementHistory.pop();
+      timeline.removeChild(timeline.lastChild);
+    }
+  }
+  currentTimelineIndex++;
+  var databaseClone = lodash.cloneDeep(database);
+  announcementHistory.push(databaseClone);
+  addButtonToAnnouncementTimeLine(agent, proposition);
+}
+
+function addButtonToAnnouncementTimeLine(agent, proposition) {
+  var ol = document.getElementById("announcement-history-ol");
+  var li = document.createElement("li");
+  ol.appendChild(li);
+  var btn = document.createElement("BUTTON");
+  li.appendChild(btn);
+
+  btn.addEventListener('click', function() {
+    var index = 0;
+    var previous = btn.parentElement.previousElementSibling;
+    while (previous) {
+      previous = previous.previousElementSibling;
+      index++;   
+    }
+    currentTimelineIndex = index + 1;
+    database = lodash.cloneDeep(announcementHistory[index]);
+    convertDatabaseToCanvasGraph();
+  }, false);
+
+  if (agent === null && proposition === null) {
+    btn.innerHTML = "grafo inicial";
+  } else {
+    btn.innerHTML = agent + " aprende " + proposition;
+  }
+}
+
+function clearAnnouncementTimeline() {
+  announcementHistory = [];
+  var ol = document.getElementById("announcement-history-ol");
+  while (ol.lastChild) {
+    print(ol.lastChild);
+    ol.removeChild(ol.lastChild);
+  }
 }
 
 function renderOutput(output, id) {
@@ -48,12 +115,7 @@ function handleFadeInEffect(id) {
   }, 100);
 }
 
-function openQuestionHelpText() {
-  var modal = document.getElementById("modal_pergunta");
+function openHelpText(id) {
+  var modal = document.getElementById(id);
   modal.style.display = "block";
-} 
-
-function openCanvasHelpText() {
-  var modal = document.getElementById("modal_canvas");
-  modal.style.display = "block";
-} 
+}

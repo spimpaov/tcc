@@ -7,7 +7,12 @@
   <script src="https://cdnjs.cloudflare.com/ajax/libs/p5.js/0.10.2/p5.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/p5.js/0.10.2/addons/p5.sound.min.js"></script>
   <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js" integrity="sha384-JjSmVgyd0p3pXB1rRibZUAYoIIy6OrQ6VrjIEaFf/nJGzIxFDsf4x0xIM+B07jRM" crossorigin="anonymous"></script>
-    <title>Verificador de Lógica Epistêmica</title>
+  <script src="https://cdn.jsdelivr.net/npm/lodash@4.17.20/lodash.min.js" integrity="sha256-ur/YlHMU96MxHEsy3fHGszZHas7NzH4RQlD4tDVvFhw=" crossorigin="anonymous"></script>
+  <script>
+    lodash = _.noConflict();
+  </script>
+
+  <title>Verificador de Lógica Epistêmica</title>
   </head>
   <body>
     <div class="p-2">
@@ -15,21 +20,47 @@
       <br>
       <div class="row">
         <div class="col-3">
-          <h5>Agentes</h5>
+          <br>
           <div class="px-1 bg-light">
-            <br>
+            <h5>Gerar Grafo</h5>
             <input id="agents" type="text" value="a,b">
-            <button class="mt-1" onClick="setAgents()">OK!</button>
             <br>
-            <span id="agents-output"></span>
+            <input id="propositions" type="text" value="p,q,r">
+            <button class="mt-1" onClick="setAgentsAndPropositions()">OK!</button>
+            <br>
+            <span id="create-graph-output"></span>
             <br>
             <br>
           </div>
           <br>
-          <h5>Pergunta</h5>
           <div class="px-1 bg-light">
-            <button type="button" id="btn_pergunta" onClick="openQuestionHelpText()">?</button>
+            <h5>Anúncio Privado</h5>
+            <button type="button" id="btn_announcement" onClick="openHelpText('modal_announcement')">?</button>
+            <input id="announcement-agent" type="text" maxlength="1" size="1" value="a"> aprende <input id="announcement-proposition" type="text" maxlength="1" size="1" value="p">
+            <button class="mt-1" onClick="makeAnnouncement()">OK!</button>
             <br>
+            <span id="announcement-output"></span>
+            <br>
+            <br>
+            <ol id="announcement-history-ol"></ol> 
+            <br>
+          </div>
+          <br>
+          <div id="modal_announcement" class="modal">
+            <div class="modal-content">
+              <h5>Anúncio Privado</h5>
+              <small>
+                <ul>
+                  <li>(φ→CBφ)∧(¬φ→CB¬φ)</li>
+                </ul>
+              </small>
+              <br>
+            </div>
+          </div>
+          <br>
+          <div class="px-1 bg-light">
+            <h5>Pergunta</h5>
+            <button type="button" id="btn_pergunta" onClick="openHelpText('modal_pergunta')">?</button>
             <input id="input" type="text">
             <button class="mt-1" onClick="calculateBasedOnUserInput()">Calcular!</button>
             <br>
@@ -128,8 +159,8 @@
         <div class="col-9">
           <h5>Canvas</h5>
           <div id="sketchHolder"></div>
-          <button class="mt-1" onClick="clearCanvas()">Apagar canvas</button>
-          &emsp;<button type="button" id="btn_canvas" onClick="openCanvasHelpText()">?</button>
+          <button class="mt-1" onClick="clearCanvas('true')">Apagar canvas</button>
+          &emsp;<button type="button" id="btn_canvas" onClick="openHelpText('modal_canvas')">?</button>
           <div id="modal_canvas" class="modal">
             <div class="modal-content">
               <h5>Canvas</h5>
@@ -163,19 +194,17 @@
       </div>
     </div>
     <script>
-      var modal_pergunta = document.getElementById("modal_pergunta");
-      var modal_canvas = document.getElementById("modal_canvas");
-      var btn = document.getElementById("btn_pergunta");
-      var btn = document.getElementById("btn_canvas");
       window.onclick = function(event) {
-        if (event.target == modal_pergunta || event.target == modal_canvas) {
-          modal_pergunta.style.display = "none";
-          modal_canvas.style.display = "none";
+        if (event.target.style.display == "block") {
+          document.getElementById("modal_pergunta").style.display = "none";
+          document.getElementById("modal_canvas").style.display = "none";
+          document.getElementById("modal_announcement").style.display = "none";
         }
       }
     </script>
     <!--Lógica do Programa-->
     <script type="text/javascript" src="js/main.js"></script>
+    <script type="text/javascript" src="js/graph.js"></script>
     <script src="js/p5js/canvas.js"></script>
     <!--Funções Auxiliares de HTML-->
     <script type="text/javascript" src="js/html_helper.js"></script>
