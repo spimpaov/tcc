@@ -1,12 +1,20 @@
 // Banco de dados default do programa
 let database = {
   // Um estado possui um 'nome' e um conjunto de 'variáveis' que são verdadeiras naquele estado
-  "states": [],
+  "states": [
+    {"id": 0, "variables": []}, 
+    {"id": 1, "variables": ["M"]}
+  ],
   // As transições entre estados são definidas por um estado 'origem', um estado 'destino' e um conjunto de 'agentes' referentes àquela transição
-  "relations": [],
-  "agents": [],
-  "propositions": [],
-  "root": null,
+  "relations": [
+    {"source": "0", "target": "0", "agents": ["a", "b"]},
+    {"source": "0", "target": "1", "agents": ["a", "b"]},
+    {"source": "1", "target": "0", "agents": ["a", "b"]},
+    {"source": "1", "target": "1", "agents": ["a", "b"]}
+  ],
+  "agents": ["a","b","c"],
+  "propositions": ["M"],
+  "root": {"id": 0},
 }
 
 // Classe de 'operador'
@@ -200,8 +208,8 @@ function calculate(stack, index, state, valid_states) {
     return {"index": deepest_index, "value": operator.validate_results(operation_results)};
   }
 
-  print("index: " + index + ", op_string: " + op_string);
-  print({"index": index, "value": get_variable_value_at_state(op_string, state)});
+  // print("index: " + index + ", op_string: " + op_string);
+  // print({"index": index, "value": get_variable_value_at_state(op_string, state)});
 
   // Caso caractere atual não seja um operador, retorna seu valor no estado atual
   return {"index": index, "value": get_variable_value_at_state(op_string, state)};

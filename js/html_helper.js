@@ -95,7 +95,6 @@ function clearAnnouncementTimeline() {
   announcementHistory = [];
   var ol = document.getElementById("announcement-history-ol");
   while (ol.lastChild) {
-    print(ol.lastChild);
     ol.removeChild(ol.lastChild);
   }
 }

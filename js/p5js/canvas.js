@@ -63,14 +63,13 @@ class myCircle {
 }
 
 class myTransition {
-  constructor(originState, destinyState, sister, agents = database.agents) {
+  constructor(originState, destinyState, agents = database.agents) {
     this.originState = originState;
     this.destinyState = destinyState;
     this.hover = false;
     this.editing = false;
     this.source = originState.name;
     this.agents = agents;
-    this.sister = sister;
   }
 
   display() {
@@ -150,6 +149,7 @@ function setup() {
   var cnv = createCanvas(canvasWidth, canvasHeight);
   cnv.parent("sketchHolder");
   rectMode(RADIUS);
+  convertDatabaseToCanvasGraph();
 }
 
 function convertDatabaseToCanvasGraph() {
@@ -178,15 +178,12 @@ function convertDatabaseToCanvasGraph() {
   );
 
   // cria transições
-  var new_relations = [];
   database.relations.forEach(
     function (r, i) {
       var sourceState = getStateByID(r.source);
       var targetState = getStateByID(r.target);
       if (sourceState !== null && targetState !== null && sourceState.id !== targetState.id) {
-        var sister = new_relations.find((f) => f.source == r.target && f.target == r.source);
-        new_relations.push(r);
-        createTransition(sourceState, targetState, sister, r.agents);
+        createTransition(sourceState, targetState, r.agents);
       } 
     }
   );
@@ -219,8 +216,9 @@ function draw() {
   //hover touched transition if any
   if (!writingText && touchedTransition !== null && currentTransition === null) {
     touchedTransition.hover = true;
-    if (touchedTransition.sister !== null && touchedTransition.sister !== undefined) {
-      touchedTransition.sister.hover = true;
+    var touchedTransitionSister = getSisterTransition(touchedTransition);
+    if (touchedTransitionSister !== undefined) {
+      touchedTransitionSister.hover = true;
     }
   }
 
@@ -278,21 +276,21 @@ function keyTyped() {
       if (currentTransition !== null) { //fixate transition
         currentTransition.destinyState = touchedState;
         currentTransition.target = touchedState.name;
-        var sisterTransition = createTransition(currentTransition.destinyState, currentTransition.originState, currentTransition);
-        currentTransition.sister = sisterTransition;
+        var sisterTransition = createTransition(currentTransition.destinyState, currentTransition.originState);
         deleteTransitionDuplicates(currentTransition);
         deleteTransitionDuplicates(sisterTransition);
         currentTransition = null;
       } else { //create transition
-        createTransition(touchedState, null, null);
+        createTransition(touchedState, null);
       }
     } else if (touchedState === null) {
       if (currentTransition !== null) { //cancel current transition
         deleteTransition(currentTransition);
         currentTransition = null;
       } else if (touchedTransition !== null) { //delete touched transition
+        var touchedTransitionSister = getSisterTransition(touchedTransition);
         deleteTransition(touchedTransition);
-        deleteTransition(touchedTransition.sister);
+        deleteTransition(touchedTransitionSister);
         touchedTransition = null;
       }
     }
@@ -348,8 +346,9 @@ function editStateText(s) {
 
 function editTransitionText(t) {
   t.editing = true;
-  if (t.sister !== undefined && t.sister !== null) {
-    t.editing.sister = true;
+  var sisterTransition = getSisterTransition(t);
+  if (sisterTransition !== undefined) {
+    sisterTransition.editing = true;
   }
   writingTransitionText = true;
   let inp = createInput(t.agents.toString());
@@ -364,8 +363,9 @@ function editTransitionText(t) {
     let index = transitions.indexOf(t);
     transitions[index].agents = inp.value().replace(/\s/g,'').split(",");
     transitions[index].editing = false;
-    if (transitions[index].sister !== undefined && transitions[index].sister !== null) {
-      let sisterIndex = transitions.indexOf(t.sister);
+    var sisterTransition = getSisterTransition(t);
+    if (sisterTransition !== undefined) {
+      let sisterIndex = transitions.indexOf(sisterTransition);
       transitions[sisterIndex].agents = inp.value().replace(/\s/g,'').split(",");
       transitions[sisterIndex].editing = false;
     }
@@ -456,8 +456,8 @@ function deleteTransition(transition) {
 }
 
 //adds a new transition to transitions array
-function createTransition(origin, destiny, sister, variables) {
-  var transition = new myTransition(origin, destiny, sister, variables);
+function createTransition(origin, destiny, variables) {
+  var transition = new myTransition(origin, destiny, variables);
   transitions.push(transition);
   if (destiny === null) {
     currentTransition = transitions[transitions.length - 1];
@@ -515,6 +515,10 @@ function getStateByID(id) {
     }
   }
   return null;
+}
+
+function getSisterTransition(t) {
+  return transitions.find((f) => f.source == t.target && f.target == t.source && t.source != f.source);
 }
 
 //print current states and transitions
