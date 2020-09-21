@@ -1,24 +1,12 @@
 // Banco de dados default do programa
 let database = {
   // Um estado possui um 'nome' e um conjunto de 'variáveis' que são verdadeiras naquele estado
-  "states": [
-    {
-      "name": "0",
-      "variables": ["m"]
-    }, {
-      "name": "1",
-      "variables": ["m"]
-    }
-  ],
+  "states": [],
   // As transições entre estados são definidas por um estado 'origem', um estado 'destino' e um conjunto de 'agentes' referentes àquela transição
-  "relations": [
-    {"source": "0", "target": "0", "agents": ["a", "b"]},
-    {"source": "0", "target": "1", "agents": ["a", "b"]},
-    {"source": "1", "target": "0", "agents": ["a", "b"]},
-    {"source": "1", "target": "1", "agents": ["a", "b"]}
-  ],
-  "agents": ["a","b"],
-  "propositions": ["m"]
+  "relations": [],
+  "agents": [],
+  "propositions": [],
+  "root": null,
 }
 
 // Classe de 'operador'
@@ -138,7 +126,7 @@ function calculate_input(expression) {
   }
 
   // Raiz é o estado inicial
-  var root_state = database.states[0];
+  var root_state = database.root;
   // Checa se expressão é válida
   if (is_valid_expression(stack)) {
     // Calcula o valor da expressão começando no fim da pilha. Esta função é recursiva e esta chamada em
@@ -254,11 +242,21 @@ function get_op_string(array, index, forwards = true) {
       for (i = index_start_char; i < array.length && array[i] != "}"; i++);
       index_end_char = i;
       index = index_end_char;
+    } else if (op_string == "'") {
+      var i = 0;
+      for (i = index_start_char+1; i < array.length && array[i] != "'"; i++);
+      index_end_char = i;
+      index = index_end_char;
     }
   } else /*backwards*/ {
     if (op_string == "}") {
       var i = 0;
       for (i = index_end_char; i >= 0 && array[i] != "{"; i--);
+      index_start_char = i;
+      index = index_start_char;
+    } else if ( op_string == "'") {
+      var i = 0;
+      for (i = index_end_char-1; i >= 0 && array[i] != "'"; i--);
       index_start_char = i;
       index = index_start_char;
     }
@@ -322,11 +320,19 @@ function delete_transition_from_database(index, agent) {
 // Apaga transições de acordo com o anúncio privado feito
 function update_database_based_on_announcement(agent, proposition) {
   var marked = [];
+  var stack = []
+  for (let character of proposition) {
+    stack.push(character);
+  }
+  
   for (let s of database.states) {
+    var s_result = calculate(stack.slice(0), stack.length - 1, s, database.states.slice(0)).value;
     var s_neighbors = get_all_state_neighbors(s, agent, database.states);
     for (let n of s_neighbors) {
-      if ((!s.variables.includes(proposition) && n.variables.includes(proposition))
-        || s.variables.includes(proposition) && !n.variables.includes(proposition)) {
+      // if ((!s.variables.includes(proposition) && n.variables.includes(proposition))
+      //   || s.variables.includes(proposition) && !n.variables.includes(proposition)) {
+      var n_result = calculate(stack.slice(0), stack.length - 1, n, database.states.slice(0)).value;
+        if (s_result != n_result) {
           marked.push(...get_symmetric_transition(s.name, n.name));
       }
     }

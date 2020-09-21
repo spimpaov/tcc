@@ -38,7 +38,7 @@ class myCircle {
 
   display() {
     push();
-    if (states.indexOf(this) === 0) { //root
+    if (this.id === database.root.id) {
       strokeWeight(5);
     }
     if (this.editing) {
@@ -150,7 +150,6 @@ function setup() {
   var cnv = createCanvas(canvasWidth, canvasHeight);
   cnv.parent("sketchHolder");
   rectMode(RADIUS);
-  createDeafultDatabase();
 }
 
 function convertDatabaseToCanvasGraph() {
@@ -191,15 +190,9 @@ function convertDatabaseToCanvasGraph() {
       } 
     }
   );
-}
 
-function createDeafultDatabase() {
-  var s0 = createState(258, 246, ["M"]);
-  var s1 = createState(518, 246, []);
-  var t0 = createTransition(s0, s1, null);
-  var t1 = createTransition(s1, s0, t0);
-  t0.sister = t1;
-  updateDatabaseFromCanvas();
+  //define raiz
+  database.root = (database.root === null) ? database.states[0] : database.root;
 }
 
 function draw() {
@@ -384,10 +377,7 @@ function editTransitionText(t) {
 }
 
 function setStateAsRoot(s) {
-  let sIndex = states.indexOf(s);
-  var lastRoot = states[0];
-  states[0] = s;
-  states[sIndex] = lastRoot;
+  database.root = s;
 } 
 
 function mousePressed() {
@@ -535,7 +525,7 @@ function printInfo() {
   print(states);
   print("CurrentTransitions:");
   print(transitions);
-  print("Root: " + states[0].id);
+  print("Root: " + database.root.id);
   print("######Database######");
   print(database);
 }

@@ -32,10 +32,8 @@ function updateDatabaseFromCanvas() {
 }
 
 function setAgentsAndPropositions() {
-  var agents = document.getElementById('agents').value;
-  var propositions = document.getElementById('propositions').value;
-  var agentsList = agents.split(",");
-  var propositionsList = propositions.split(",");
+  var agentsList = document.getElementById('agents').value.split(",");
+  var propositionsList = document.getElementById('propositions').value.split(",");
   database = createDatabase(agentsList, propositionsList);
   updateAnnouncementHistory(null, null, 0);
   convertDatabaseToCanvasGraph();

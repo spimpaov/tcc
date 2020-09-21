@@ -23,7 +23,7 @@
           <br>
           <div class="px-1 bg-light">
             <h5>Gerar Grafo</h5>
-            <input id="agents" type="text" value="a,b">
+            <input id="agents" type="text" value="a,b,c">
             <br>
             <input id="propositions" type="text" value="p,q,r">
             <button class="mt-1" onClick="setAgentsAndPropositions()">OK!</button>
@@ -53,7 +53,7 @@
           <div class="px-1 bg-light">
             <h5>Anúncio Privado</h5>
             <button type="button" id="btn_announcement" onClick="openHelpText('modal_announcement')">?</button>
-            <input id="announcement-agent" type="text" maxlength="1" size="1" value="a"> aprende <input id="announcement-proposition" type="text" maxlength="1" size="1" value="p">
+            <input id="announcement-agent" type="text" size="5" value="a"> aprende <input id="announcement-proposition" type="text" size="5"  value="p">
             <button class="mt-1" onClick="makeAnnouncement()">OK!</button>
             <br>
             <span id="announcement-output"></span>
