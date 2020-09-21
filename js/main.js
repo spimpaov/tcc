@@ -3,7 +3,7 @@ let database = {
   // Um estado possui um 'nome' e um conjunto de 'variáveis' que são verdadeiras naquele estado
   "states": [
     {"id": 0, "variables": []}, 
-    {"id": 1, "variables": ["M"]}
+    {"id": 1, "variables": ["{M}"]}
   ],
   // As transições entre estados são definidas por um estado 'origem', um estado 'destino' e um conjunto de 'agentes' referentes àquela transição
   "relations": [
@@ -13,8 +13,8 @@ let database = {
     {"source": "1", "target": "1", "agents": ["a", "b"]}
   ],
   "agents": ["a","b","c"],
-  "propositions": ["M"],
-  "root": {"id": 0},
+  "propositions": ["{M}"],
+  "rootID": 0,
 }
 
 // Classe de 'operador'
@@ -133,8 +133,7 @@ function calculate_input(expression) {
     stack.push(character);
   }
 
-  // Raiz é o estado inicial
-  var root_state = database.root;
+  var root_state = database.states.find((f) => f.id == database.rootID);
   // Checa se expressão é válida
   if (is_valid_expression(stack)) {
     // Calcula o valor da expressão começando no fim da pilha. Esta função é recursiva e esta chamada em

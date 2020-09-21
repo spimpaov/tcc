@@ -38,7 +38,7 @@ class myCircle {
 
   display() {
     push();
-    if (this.id === database.root.id) {
+    if (this.id == database.rootID) {
       strokeWeight(5);
     }
     if (this.editing) {
@@ -131,6 +131,9 @@ function setup() {
   var cnv = createCanvas(canvasWidth, canvasHeight);
   cnv.parent("sketchHolder");
   rectMode(RADIUS);
+
+  //default graph
+  updateAnnouncementHistory(null, null, 0);
   convertDatabaseToCanvasGraph();
 }
 
@@ -169,9 +172,6 @@ function convertDatabaseToCanvasGraph() {
       } 
     }
   );
-
-  //define raiz
-  database.root = (database.root === null) ? database.states[0] : database.root;
 }
 
 function draw() {
@@ -288,7 +288,7 @@ function keyTyped() {
 
   //define root
   } else if (!writingText && (key === 'r' || key === 'R') && touchedState !== null ) {
-    setStateAsRoot(touchedState);
+    setStateAsRoot(touchedState.id);
 
   //print info about current states and transitions
   } else if (!writingText && (key === 'i' || key === 'I')) {
@@ -357,8 +357,8 @@ function editTransitionText(t) {
   });
 }
 
-function setStateAsRoot(s) {
-  database.root = s;
+function setStateAsRoot(id) {
+  database.rootID = id;
 } 
 
 function mousePressed() {
@@ -420,6 +420,9 @@ function deleteState(state) {
   }
   let index = states.indexOf(state);
   states.splice(index, 1);
+  if (stateID == database.rootID && states.length > 0) {
+    setStateAsRoot(states[0].id);
+  }
 }
 
 //adds a new state to states array and create a transtition for itself
@@ -427,6 +430,9 @@ function createState(posX, posY, variables) {
   var newState = new myCircle(posX, posY, variables);
   states.push(newState);
   createTransition(newState, newState);
+  if (states.length === 1) { //primeiro estado criado
+    setStateAsRoot(states[0].id);
+  }
   return newState;
 }
 
@@ -509,7 +515,7 @@ function printInfo() {
   print(states);
   print("CurrentTransitions:");
   print(transitions);
-  print("Root: " + database.root.id);
+  print("Root ID: " + database.rootID);
   print("######Database######");
   print(database);
 }
