@@ -250,7 +250,7 @@ function get_op_string(array, index, forwards = true) {
       index_end_char = i;
       index = index_end_char;
     } else if (op_string == "'") {
-      var i = 0;
+      var i = index_start_char+1;
       for (i = index_start_char+1; i < array.length && array[i] != "'"; i++);
       index_end_char = i;
       index = index_end_char;
@@ -262,7 +262,7 @@ function get_op_string(array, index, forwards = true) {
       index_start_char = i;
       index = index_start_char;
     } else if ( op_string == "'") {
-      var i = 0;
+      var i = index_end_char-1;
       for (i = index_end_char-1; i >= 0 && array[i] != "'"; i--);
       index_start_char = i;
       index = index_start_char;
