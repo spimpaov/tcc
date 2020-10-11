@@ -38,7 +38,7 @@ class myCircle {
 
   display() {
     push();
-    if (this.id == database.rootID) {
+    if (this.id == rootID) {
       strokeWeight(5);
     }
     if (this.editing) {
@@ -138,6 +138,7 @@ function setup() {
 }
 
 function convertDatabaseToCanvasGraph() {
+  var root = rootID;
   clearCanvas();
 
   // cria estados
@@ -172,6 +173,8 @@ function convertDatabaseToCanvasGraph() {
       } 
     }
   );
+  
+  setStateAsRoot(root);
 }
 
 function draw() {
@@ -358,7 +361,7 @@ function editTransitionText(t) {
 }
 
 function setStateAsRoot(id) {
-  database.rootID = id;
+  rootID = id;
 } 
 
 function mousePressed() {
@@ -420,7 +423,7 @@ function deleteState(state) {
   }
   let index = states.indexOf(state);
   states.splice(index, 1);
-  if (stateID == database.rootID && states.length > 0) {
+  if (stateID == rootID && states.length > 0) {
     setStateAsRoot(states[0].id);
   }
 }
@@ -516,7 +519,7 @@ function printInfo() {
   print(states);
   print("CurrentTransitions:");
   print(transitions);
-  print("Root ID: " + database.rootID);
+  print("Root ID: " + rootID);
   print("######Database######");
   print(database);
 }

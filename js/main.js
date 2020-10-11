@@ -14,8 +14,8 @@ let database = {
   ],
   "agents": ["a","b","c"],
   "propositions": ["{M}"],
-  "rootID": 0,
 }
+let rootID = 0;
 
 // Classe de 'operador'
 const operator = class {
@@ -133,7 +133,7 @@ function calculate_input(expression) {
     stack.push(character);
   }
 
-  var root_state = database.states.find((f) => f.id == database.rootID);
+  var root_state = database.states.find((f) => f.id == rootID);
   // Checa se expressão é válida
   if (is_valid_expression(stack)) {
     // Calcula o valor da expressão começando no fim da pilha. Esta função é recursiva e esta chamada em

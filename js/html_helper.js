@@ -34,7 +34,7 @@ function updateDatabaseFromCanvas() {
 function setAgentsAndPropositions() {
   var agentsList = document.getElementById('agents').value.split(",");
   var propositionsList = document.getElementById('propositions').value.split(",");
-  database = createDatabase(agentsList, propositionsList);
+  createDatabase(agentsList, propositionsList);
   updateAnnouncementHistory(null, null, 0);
   convertDatabaseToCanvasGraph();
   createInitialDBTextInput(agentsList);
@@ -108,7 +108,7 @@ function createInitialDBTextInput(agents) {
     var agentInput = document.createElement('input');
     agentInput.type = 'text';
     agentInput.id = 'initial-db-' + agent;
-    agentInput.value = '{M}{E' + agent + '(M)}>';
+    agentInput.value = "'M''E" + agent + "(M)'>";
     agentSpan.appendChild(agentInput);
   }
 }
