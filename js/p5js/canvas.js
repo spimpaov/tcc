@@ -57,7 +57,7 @@ class myCircle {
     textAlign(CENTER, CENTER);
     textSize(14);
     rectMode(CENTER);
-    var displayText = this.name + ": [ " + this.variables.join(", ") + " ]";
+    var displayText = this.name + ": [" + this.variables.join(", ") + "]";
     text(displayText, this.x, this.y, stateRadius*2, stateRadius*2);
     pop();
   }
@@ -142,23 +142,13 @@ function convertDatabaseToCanvasGraph() {
   clearCanvas();
 
   // cria estados
-  var xOffset = 100;
-  var yOffset = 100;
-  var xJump = 300;
-  var yJump = 300;
-  var xMod = canvasWidth;
-  var linha = 0;
+  var xOffset = canvasWidth/2;
+  var yOffset = canvasHeight/2;
+
   database.states.forEach(
     function (s, i) {
-      var stateXPos = (s.x === undefined) ? xOffset + (i % xMod)*xJump : s.x;
-      if (stateXPos >= canvasWidth - xOffset && xMod === canvasWidth) {
-        xMod = i;
-        stateXPos = (s.x === undefined) ? xOffset + (i % xMod)*xJump : s.x;
-      }
-      if (i != 0 && i % xMod === 0) {
-        linha++;
-      }
-      var stateYPos = (s.y === undefined) ? yOffset + linha*yJump : s.y;
+      var stateXPos = Math.cos(i * 360/database.states.length * 2 * Math.PI/360) * 300 + xOffset;
+      var stateYPos = Math.sin(i * 360/database.states.length * 2 * Math.PI/360) * 300 + yOffset;
       createState(stateXPos, stateYPos, s.variables, s.name);
     }
   );
@@ -173,7 +163,6 @@ function convertDatabaseToCanvasGraph() {
       } 
     }
   );
-  
   setStateAsRoot(root);
 }
 
