@@ -3,7 +3,7 @@ let database = {
   // Um estado possui um 'nome' e um conjunto de 'variáveis' que são verdadeiras naquele estado
   "states": [
     {"id": 0, "variables": []}, 
-    {"id": 1, "variables": ["{M}"]}
+    {"id": 1, "variables": ["'M'"]}
   ],
   // As transições entre estados são definidas por um estado 'origem', um estado 'destino' e um conjunto de 'agentes' referentes àquela transição
   "relations": [
@@ -12,8 +12,8 @@ let database = {
     {"source": "1", "target": "0", "agents": ["a", "b"]},
     {"source": "1", "target": "1", "agents": ["a", "b"]}
   ],
-  "agents": ["a","b","c"],
-  "propositions": ["{M}"],
+  "agents": ["a","b"],
+  "propositions": ["'M'"],
 }
 let rootID = 0;
 

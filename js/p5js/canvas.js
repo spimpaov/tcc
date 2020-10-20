@@ -177,10 +177,29 @@ function convertDatabaseToCanvasGraph() {
 }
 
 function draw() {
+  background(240);
+
+  //desenha texto durante modo de escrita
+  if (writingStateText) {
+    push();
+    textSize(18);
+    textAlign(RIGHT);
+    text('Nome:', 195, 70);
+    text('Variáveis:', 195, 105);
+    pop();
+  }
+
+  if (writingTransitionText) {
+    push();
+    textSize(18);
+    textAlign(RIGHT);
+    text('Agentes:', 195, 70);
+    pop();
+  }
+
   translate(offset.x, offset.y);
   scale(zoom);
 
-  background(240);
   mouseInsideCanvas = (mouseX >= 0 && mouseX <= canvasWidth && mouseY >= 0 && mouseY <= canvasHeight) ? true : false;
 
   //reset states hover 
@@ -219,24 +238,6 @@ function draw() {
   //desenha os estados
   for (let i = 0; i < states.length; i++) {
     states[i].display();
-  }
-
-  //desenha texto durante modo de escrita
-  if (writingStateText) {
-    push();
-    textSize(18);
-    textAlign(RIGHT);
-    text('Nome:', 195, 70);
-    text('Variáveis:', 195, 100);
-    pop();
-  }
-
-  if (writingTransitionText) {
-    push();
-    textSize(18);
-    textAlign(RIGHT);
-    text('Agentes:', 195, 70);
-    pop();
   }
 }
 
@@ -306,7 +307,7 @@ function editStateText(s) {
   s.editing = true;
   writingStateText = true;
   let nameInput = createInput(s.name.toString(10));
-  let variablesInput = createInput(JSON.stringify(s.variables));
+  let variablesInput = createInput(s.variables.toString());
 
   nameInput.position(200, 50);
   nameInput.parent("sketchHolder");
@@ -316,12 +317,11 @@ function editStateText(s) {
   let button = createButton('Submit');
   button.position(variablesInput.x + variablesInput.width + 5, variablesInput.y);
   button.parent("sketchHolder");
-
-
+  
   button.mousePressed(function() {
     let index = states.indexOf(s);
     states[index].name = nameInput.value();
-    states[index].variables = JSON.parse(variablesInput.value());
+    states[index].variables = variablesInput.value().replace(/\s/g,'').split(",");
     states[index].editing = false;
     writingText = false;
     writingStateText = false;
@@ -387,7 +387,7 @@ function mouseDragged() {
     touchedState.x = screenMousePos.x - xOffset;
     touchedState.y = screenMousePos.y - yOffset;
   } 
-  else if (dragging) {
+  else if (!writingText && dragging && mouseInsideCanvas) {
     offset.x += (mouseX - lastMouse.x);
     offset.y += (mouseY - lastMouse.y);
     lastMouse.x = mouseX;
