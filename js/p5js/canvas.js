@@ -23,6 +23,15 @@ let transitions = [];
 //lista de transições ainda inacabadas
 let arrows = [];
 
+//variaveis para zoom e dragging
+let zoom = 1.00;
+let zMin = 0.05;
+let zMax = 9.00;
+let sensitivity = 0.05;
+let offset = {"x": 20, "y": 20};
+let dragging = false;
+let lastMouse = {"x": 0, "y": 0};
+
 class myCircle {
   constructor(x, y, variables, name = nextCircleID.toString()) {
     this.x = x;
@@ -78,7 +87,8 @@ class myTransition {
     var destinyVector;
     if (this.destinyState === null) {
       let fillColor = color(217, 217, 217);
-      destinyVector = createVector(mouseX, mouseY);
+      var screenMousePos = worldSpaceToScreenSpace(mouseX, mouseY);
+      destinyVector = createVector(screenMousePos.x, screenMousePos.y);
       this.drawArrow(originVector, destinyVector, fillColor, true);
     } else {
       let fillColor = (this.hover) ? color(250, 100, 100) : color(51, 51, 51);
@@ -167,8 +177,11 @@ function convertDatabaseToCanvasGraph() {
 }
 
 function draw() {
+  translate(offset.x, offset.y);
+  scale(zoom);
+
   background(240);
-  mouseInsideCanvas = (mouseX >= 0 && mouseX <= 1280 && mouseY >= 0 && mouseY <= 720) ? true : false;
+  mouseInsideCanvas = (mouseX >= 0 && mouseX <= canvasWidth && mouseY >= 0 && mouseY <= canvasHeight) ? true : false;
 
   //reset states hover 
   for (let s of states) {
@@ -240,7 +253,8 @@ function keyTyped() {
     if (touchedState !== null) { //delete state
       deleteState(touchedState);
     } else { //create state
-      createState(mouseX, mouseY, []);
+      var screenMousePos = worldSpaceToScreenSpace(mouseX, mouseY);
+      createState(screenMousePos.x, screenMousePos.y, []);
     }
 
   //transition control
@@ -356,30 +370,64 @@ function setStateAsRoot(id) {
 function mousePressed() {
   if (!writingText && touchedState !== null && locked === false) {
     locked = true;
-    xOffset = mouseX - touchedState.x;
-    yOffset = mouseY - touchedState.y;
+    var screenMousePos = worldSpaceToScreenSpace(mouseX, mouseY)
+    xOffset = screenMousePos.x - touchedState.x;
+    yOffset = screenMousePos.y - touchedState.y;
+  }
+  else {
+    dragging = true;
+    lastMouse.x = mouseX;
+    lastMouse.y = mouseY;
   }
 }
 
 function mouseDragged() {
   if (!writingText && touchedState !== null && locked === true) {
-    touchedState.x = mouseX - xOffset;
-    touchedState.y = mouseY - yOffset;
+    var screenMousePos = worldSpaceToScreenSpace(mouseX, mouseY)
+    touchedState.x = screenMousePos.x - xOffset;
+    touchedState.y = screenMousePos.y - yOffset;
+  } 
+  else if (dragging) {
+    offset.x += (mouseX - lastMouse.x);
+    offset.y += (mouseY - lastMouse.y);
+    lastMouse.x = mouseX;
+    lastMouse.y = mouseY;
   }
 }
 
 function mouseReleased() {
   locked = false;
+  dragging = false;
+}
+
+function mouseWheel(event) {
+  zoom += sensitivity * event.delta;
+  zoom = constrain(zoom, zMin, zMax);
+  return false;
 }
 
 //check if cursor is inside any of the states
 function cursorInsideAnyCircle() {
+  var mousePos = createVector(mouseX, mouseY);
   for (let i = states.length - 1; i >= 0; i--) {
-    if ((mouseX - states[i].x) * (mouseX - states[i].x) + (mouseY - states[i].y) * (mouseY - states[i].y) <= stateRadius * stateRadius) {
+    var statePos = screenSpaceToWorldSpace(states[i].x, states[i].y);
+    if ((mousePos.x - statePos.x) * (mousePos.x - statePos.x) + (mousePos.y - statePos.y) * (mousePos.y - statePos.y) <= stateRadius * stateRadius * zoom * zoom) {
       return states[i];
     }
   }
   return null;
+}
+
+function screenSpaceToWorldSpace(xPos, yPos) {
+  var x = (xPos * zoom) + offset.x;
+  var y = (yPos * zoom) + offset.y;
+  return createVector(x, y);
+}
+
+function worldSpaceToScreenSpace(xPos, yPos) {
+  var x = (xPos - offset.x) / zoom;
+  var y = (yPos - offset.y) / zoom;
+  return createVector(x, y);
 }
 
 //check if cursor is inside any of the transitions
@@ -388,12 +436,14 @@ function cursorInsideAnyTransition() {
     if (transitions[i].destinyState === null || transitions[i].destinyState === null) {
       return false;
     }
-    var d1 = dist(transitions[i].originState.x, transitions[i].originState.y, mouseX, mouseY);
-    var d2 = dist(transitions[i].destinyState.x, transitions[i].destinyState.y, mouseX, mouseY);
+    var originStatePos = screenSpaceToWorldSpace(transitions[i].originState.x, transitions[i].originState.y);
+    var destinyStatePos = screenSpaceToWorldSpace(transitions[i].destinyState.x, transitions[i].destinyState.y);
+    var d1 = dist(originStatePos.x, originStatePos.y, mouseX, mouseY);
+    var d2 = dist(destinyStatePos.x, destinyStatePos.y, mouseX, mouseY);
 
-    if (d1 <= stateRadius || d2 <= stateRadius) continue;
+    if (d1 <= stateRadius * zoom || d2 <= stateRadius * zoom) continue;
 
-    const length = dist(transitions[i].originState.x, transitions[i].originState.y, transitions[i].destinyState.x, transitions[i].destinyState.y);
+    const length = dist(originStatePos.x, originStatePos.y, destinyStatePos.x, destinyStatePos.y);
 
     const cond1 = (d1 + d2) - 0.5 <= length;
     const cond2 = (d1 + d2) + 0.5 >= length;
