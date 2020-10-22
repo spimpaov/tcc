@@ -402,11 +402,14 @@ function mouseReleased() {
 }
 
 function mouseWheel(event) {
-  if (!writingText && !openHelper) {
-    zoom += sensitivity * event.delta;
-    zoom = constrain(zoom, zMin, zMax);
+  if (mouseInsideCanvas) {
+    if (!writingText && !openHelper) {
+      zoom += sensitivity * event.delta;
+      zoom = constrain(zoom, zMin, zMax);
+    }
+    return false;
   }
-  return false;
+  return true;
 }
 
 //check if cursor is inside any of the states

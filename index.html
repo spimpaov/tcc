@@ -78,30 +78,6 @@
           </div>
           <br>
           <div class="px-1 bg-light">
-            <h5>Anúncio Privado</h5>
-            <button type="button" id="btn_helper" onClick="openHelpText('modal_announcement')">?</button>
-            <input id="announcement-agent" type="text" size="5" value="c"> aprende <input id="announcement-proposition" type="text" size="5"  value="'Eb(M)'">
-            <button class="mt-1" onClick="makeAnnouncement()">OK!</button>
-            <br>
-            <span id="announcement-output"></span>
-            <br>
-            <ol id="announcement-history-ol"></ol> 
-            <br>
-          </div>
-          <br>
-          <div id="modal_announcement" class="modal">
-            <div class="modal-content">
-              <h5>Anúncio Privado</h5>
-              <small>
-              <p>Defina um novo conhecimento para determinado agente fazendo um anúncio privado a ele.</p>
-              <p>Insira um agente no primeiro campo de texto e uma proposição verdadeira no segundo campo.</p>
-              <p><b>Exemplo: </b><span id="code_text">b </span> aprende </b><span id="code_text">'Eb(M)'</span>.</p>
-              <p>Os anúncios feitos seguem a seguinte regra: (φ→CBφ)∧(¬φ→CB¬φ). Por exemplo, se 'a' aprende 'M', 'a' saberá distinguir estados onde 'M' é verdadeiro de estados onde 'M' é falso, e vice versa. Porém, 'a' ainda terá dúvida entre estados vizinhos onde 'M' é verdadeiro em ambos, ou onde 'M' é falso entre ambos.</p>
-              </small>
-            </div>
-          </div>
-          <br>
-          <div class="px-1 bg-light">
             <h5>Pergunta</h5>
             <button type="button" id="btn_helper" onClick="openHelpText('modal_pergunta')">?</button>
             <input id="input" type="text">
@@ -195,6 +171,31 @@
               </table>
             </div>
           </div>
+          <br>
+          <div class="px-1 bg-light">
+            <h5>Anúncio Privado</h5>
+            <button type="button" id="btn_helper" onClick="openHelpText('modal_announcement')">?</button>
+            <input id="announcement-agent" type="text" size="5" value="c"> aprende <input id="announcement-proposition" type="text" size="5"  value="'Eb(M)'">
+            <button class="mt-1" onClick="makeAnnouncement()">OK!</button>
+            <br>
+            <span id="announcement-output"></span>
+            <br>
+            <ol id="announcement-history-ol"></ol> 
+            <br>
+          </div>
+          <br>
+          <div id="modal_announcement" class="modal">
+            <div class="modal-content">
+              <h5>Anúncio Privado</h5>
+              <small>
+              <p>Defina um novo conhecimento para determinado agente fazendo um anúncio privado a ele.</p>
+              <p>Insira um agente no primeiro campo de texto e uma proposição verdadeira no segundo campo.</p>
+              <p><b>Exemplo: </b><span id="code_text">b </span> aprende </b><span id="code_text">'Eb(M)'</span>.</p>
+              <p>Os anúncios feitos seguem a seguinte regra: (φ→CBφ)∧(¬φ→CB¬φ). Por exemplo, se 'a' aprende 'M', 'a' saberá distinguir estados onde 'M' é verdadeiro de estados onde 'M' é falso, e vice versa. Porém, 'a' ainda terá dúvida entre estados vizinhos onde 'M' é verdadeiro em ambos, ou onde 'M' é falso entre ambos.</p>
+              </small>
+            </div>
+          </div>
+          <br>
         </div>
         <div class="col-9">
           <h5>Canvas</h5>
