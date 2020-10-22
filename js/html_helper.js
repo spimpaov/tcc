@@ -145,6 +145,7 @@ function handleFadeInEffect(id) {
 }
 
 function openHelpText(id) {
+  openHelper = true;
   var modal = document.getElementById(id);
   modal.style.display = "block";
 }

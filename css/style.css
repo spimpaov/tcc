@@ -27,10 +27,12 @@
   width: 40%;
 }
 
-#btn_pergunta {
+#btn_helper{
   float: right; 
 }
 
-#btn_announcement {
-  float: right; 
+#code_text {
+  font-family: 'Courier New', Courier, monospace;
+  background-color: rgb(255, 255, 224);
+  color: black;
 }

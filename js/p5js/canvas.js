@@ -7,6 +7,7 @@ let touchedState = null;
 let touchedTransition = null;
 let currentTransition = null;
 let writingText = false;
+let openHelper = false;
 let writingStateText = false;
 let writingTransitionText = false;
 let stateRadius = 50;
@@ -28,7 +29,7 @@ let zoom = 1.00;
 let zMin = 0.05;
 let zMax = 9.00;
 let sensitivity = 0.05;
-let offset = {"x": 20, "y": 20};
+let offset = {"x": 0, "y": 0};
 let dragging = false;
 let lastMouse = {"x": 0, "y": 0};
 
@@ -210,7 +211,7 @@ function draw() {
   if (!locked) {
     touchedState = cursorInsideAnyCircle();
   }
-  if (!writingText && touchedState !== null) {
+  if (!writingText && !openHelper && touchedState !== null) {
     touchedState.hover = true;
   }
 
@@ -220,7 +221,7 @@ function draw() {
   }
 
   //hover touched transition if any
-  if (!writingText && touchedTransition !== null && currentTransition === null) {
+  if (!writingText && !openHelper && touchedTransition !== null && currentTransition === null) {
     touchedTransition.hover = true;
     var touchedTransitionSister = getSisterTransition(touchedTransition);
     if (touchedTransitionSister !== undefined) {
@@ -250,7 +251,7 @@ function keyTyped() {
   touchedTransition = cursorInsideAnyTransition();
 
   //state control
-  if (!writingText && (key === 's' || key === 'S')) {
+  if (!writingText && !openHelper && (key === 's' || key === 'S')) {
     if (touchedState !== null) { //delete state
       deleteState(touchedState);
     } else { //create state
@@ -259,7 +260,7 @@ function keyTyped() {
     }
 
   //transition control
-  } else if (!writingText && (key === 't' || key === 'T')) {
+  } else if (!writingText && !openHelper && (key === 't' || key === 'T')) {
     if (touchedState !== null) {
       if (currentTransition !== null) { //fixate transition
         currentTransition.destinyState = touchedState;
@@ -284,7 +285,7 @@ function keyTyped() {
     }
 
   //write control 
-  } else if (!writingText && (key === 'w' || key === 'W') && currentTransition === null) {
+  } else if (!writingText && !openHelper && (key === 'w' || key === 'W') && currentTransition === null) {
     if (touchedState !== null) { //write to state
       writingText = true;
       editStateText(touchedState);
@@ -294,11 +295,11 @@ function keyTyped() {
     }
 
   //define root
-  } else if (!writingText && (key === 'r' || key === 'R') && touchedState !== null ) {
+  } else if (!writingText && !openHelper && (key === 'r' || key === 'R') && touchedState !== null ) {
     setStateAsRoot(touchedState.id);
 
   //print info about current states and transitions
-  } else if (!writingText && (key === 'i' || key === 'I')) {
+  } else if (!writingText && !openHelper && (key === 'i' || key === 'I')) {
     printInfo();
   }
 }
@@ -314,7 +315,7 @@ function editStateText(s) {
 
   variablesInput.position(nameInput.x, nameInput.y + nameInput.height + 5);
   variablesInput.parent("sketchHolder");
-  let button = createButton('Submit');
+  let button = createButton('OK!');
   button.position(variablesInput.x + variablesInput.width + 5, variablesInput.y);
   button.parent("sketchHolder");
   
@@ -342,7 +343,7 @@ function editTransitionText(t) {
   inp.position(200, 50);
   inp.parent("sketchHolder");
 
-  button = createButton('Submit');
+  button = createButton('OK!');
   button.position(inp.x + inp.width + 5, inp.y);
   button.parent("sketchHolder");
 
@@ -368,7 +369,7 @@ function setStateAsRoot(id) {
 } 
 
 function mousePressed() {
-  if (!writingText && touchedState !== null && locked === false) {
+  if (!writingText && !openHelper && touchedState !== null && locked === false) {
     locked = true;
     var screenMousePos = worldSpaceToScreenSpace(mouseX, mouseY)
     xOffset = screenMousePos.x - touchedState.x;
@@ -382,12 +383,12 @@ function mousePressed() {
 }
 
 function mouseDragged() {
-  if (!writingText && touchedState !== null && locked === true) {
+  if (!writingText && !openHelper && touchedState !== null && locked === true) {
     var screenMousePos = worldSpaceToScreenSpace(mouseX, mouseY)
     touchedState.x = screenMousePos.x - xOffset;
     touchedState.y = screenMousePos.y - yOffset;
   } 
-  else if (!writingText && dragging && mouseInsideCanvas) {
+  else if (!writingText && !openHelper && dragging && mouseInsideCanvas) {
     offset.x += (mouseX - lastMouse.x);
     offset.y += (mouseY - lastMouse.y);
     lastMouse.x = mouseX;
@@ -401,8 +402,10 @@ function mouseReleased() {
 }
 
 function mouseWheel(event) {
-  zoom += sensitivity * event.delta;
-  zoom = constrain(zoom, zMin, zMax);
+  if (!writingText && !openHelper) {
+    zoom += sensitivity * event.delta;
+    zoom = constrain(zoom, zMin, zMax);
+  }
   return false;
 }
 
