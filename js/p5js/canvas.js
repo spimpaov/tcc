@@ -158,8 +158,12 @@ function convertDatabaseToCanvasGraph() {
 
   database.states.forEach(
     function (s, i) {
-      var stateXPos = Math.cos(i * 360/database.states.length * 2 * Math.PI/360) * 300 + xOffset;
-      var stateYPos = Math.sin(i * 360/database.states.length * 2 * Math.PI/360) * 300 + yOffset;
+      var stateXPos = s.x;
+      var stateYPos = s.y;
+      if (stateXPos === undefined && stateYPos == undefined) {
+        stateXPos = Math.cos(i * 360/database.states.length * 2 * Math.PI/360) * 300 + xOffset;
+        stateYPos = Math.sin(i * 360/database.states.length * 2 * Math.PI/360) * 300 + yOffset;
+      }
       createState(stateXPos, stateYPos, s.variables, s.name);
     }
   );
