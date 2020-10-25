@@ -42,9 +42,9 @@ function setAgentsAndPropositions() {
 }
 
 function makeAnnouncement() {
-  var agent = document.getElementById("announcement-agent").value;
+  var agents = document.getElementById("announcement-agent").value.split(",");
   var proposition = document.getElementById("announcement-proposition").value;
-  private_announcement(agent, proposition);
+  private_announcement(agents, proposition);
   renderOutput("✓", 'announcement-output');
 }
 
@@ -74,7 +74,7 @@ function addButtonToAnnouncementTimeLine(agent, proposition) {
     var previous = btn.parentElement.previousElementSibling;
     while (previous) {
       previous = previous.previousElementSibling;
-      index++;   
+      index++;
     }
     currentTimelineIndex = index + 1;
     database = lodash.cloneDeep(announcementHistory[index]);
@@ -118,7 +118,7 @@ function setInitialDatabase() {
   for (var agentSpan of initialDBInputs.childNodes) {
     var agentDB = agentSpan.lastChild.value.replace(/\s/g,'').split(",");
     for (var proposition of agentDB) {
-      private_announcement(agentSpan.agent, proposition);
+      private_announcement([agentSpan.agent], proposition);
     }
   }
   renderOutput("✓", 'initial-db-output');

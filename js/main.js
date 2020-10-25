@@ -2,7 +2,7 @@
 let database = {
   // Um estado possui um 'nome' e um conjunto de 'variáveis' que são verdadeiras naquele estado
   "states": [
-    {"id": 0, "variables": []}, 
+    {"id": 0, "variables": []},
     {"id": 1, "variables": ["'M'"]}
   ],
   // As transições entre estados são definidas por um estado 'origem', um estado 'destino' e um conjunto de 'agentes' referentes àquela transição
@@ -331,7 +331,7 @@ function update_database_based_on_announcement(agent, proposition) {
   for (let character of proposition) {
     stack.push(character);
   }
-  
+
   for (let s of database.states) {
     var s_result = calculate(stack.slice(0), stack.length - 1, s, database.states.slice(0)).value;
     var s_neighbors = get_all_state_neighbors(s, agent, database.states);
@@ -344,6 +344,16 @@ function update_database_based_on_announcement(agent, proposition) {
       }
     }
   }
+  return marked;
+  // for (t of marked) {
+  //   var t_index = database.relations.indexOf(t);
+  //   if (t_index > -1) {
+  //     delete_transition_from_database(t_index, agent);
+  //   }
+  // }
+}
+
+function delete_relations(agent, marked) {
   for (t of marked) {
     var t_index = database.relations.indexOf(t);
     if (t_index > -1) {
@@ -353,11 +363,14 @@ function update_database_based_on_announcement(agent, proposition) {
 }
 
 // Atualiza o grafo baseado num anúncio privado feito
-function private_announcement(agent, proposition) {
+function private_announcement(agents, proposition) {
   updateDatabaseFromCanvas();
-  update_database_based_on_announcement(agent, proposition);
-  var resetToPos = (announcementHistory.length !== currentTimelineIndex) ? currentTimelineIndex : -1;
-  updateAnnouncementHistory(agent, proposition, resetToPos);
+  for (agent of agents) {
+    var marked = update_database_based_on_announcement(agent, proposition);
+    delete_relations(agent, marked);
+    var resetToPos = (announcementHistory.length !== currentTimelineIndex) ? currentTimelineIndex : -1;
+    updateAnnouncementHistory(agent, proposition, resetToPos);
+  }
   convertDatabaseToCanvasGraph();
 }
 

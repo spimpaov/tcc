@@ -109,7 +109,7 @@ class myTransition {
     } else {
       fill(myColor);
       stroke(myColor);
-    } 
+    }
     translate(base.x, base.y);
     line(0, 0, resultVector.x, resultVector.y);
     rotate(resultVector.heading());
@@ -128,8 +128,8 @@ class myTransition {
   drawTransitionText(arrow) {
     push();
     rotate(-arrow.heading());
-    textAlign(CENTER, CENTER); 
-    strokeWeight(5); 
+    textAlign(CENTER, CENTER);
+    strokeWeight(5);
     textStyle(BOLD);
     stroke(255, 255, 255);
     translate(arrow.x/2, arrow.y/2);
@@ -175,7 +175,7 @@ function convertDatabaseToCanvasGraph() {
       var targetState = getStateByID(r.target);
       if (sourceState !== null && targetState !== null && sourceState.id !== targetState.id) {
         createTransition(sourceState, targetState, r.agents);
-      } 
+      }
     }
   );
   setStateAsRoot(root);
@@ -207,7 +207,7 @@ function draw() {
 
   mouseInsideCanvas = (mouseX >= 0 && mouseX <= canvasWidth && mouseY >= 0 && mouseY <= canvasHeight) ? true : false;
 
-  //reset states hover 
+  //reset states hover
   for (let s of states) {
     s.hover = false;
   }
@@ -219,7 +219,7 @@ function draw() {
     touchedState.hover = true;
   }
 
-  //reset transitions hover 
+  //reset transitions hover
   for (let t of transitions) {
     t.hover = false;
   }
@@ -288,7 +288,7 @@ function keyTyped() {
       }
     }
 
-  //write control 
+  //write control
   } else if (!writingText && !openHelper && (key === 'w' || key === 'W') && currentTransition === null) {
     if (touchedState !== null) { //write to state
       writingText = true;
@@ -322,7 +322,7 @@ function editStateText(s) {
   let button = createButton('OK!');
   button.position(variablesInput.x + variablesInput.width + 5, variablesInput.y);
   button.parent("sketchHolder");
-  
+
   button.mousePressed(function() {
     let index = states.indexOf(s);
     states[index].name = nameInput.value();
@@ -370,7 +370,7 @@ function editTransitionText(t) {
 
 function setStateAsRoot(id) {
   rootID = id;
-} 
+}
 
 function mousePressed() {
   if (!writingText && !openHelper && touchedState !== null && locked === false) {
@@ -391,7 +391,7 @@ function mouseDragged() {
     var screenMousePos = worldSpaceToScreenSpace(mouseX, mouseY)
     touchedState.x = screenMousePos.x - xOffset;
     touchedState.y = screenMousePos.y - yOffset;
-  } 
+  }
   else if (!writingText && !openHelper && dragging && mouseInsideCanvas) {
     offset.x += (mouseX - lastMouse.x);
     offset.y += (mouseY - lastMouse.y);
