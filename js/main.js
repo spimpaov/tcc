@@ -365,9 +365,12 @@ function delete_relations(agent, marked) {
 // Atualiza o grafo baseado num anúncio privado feito
 function private_announcement(agents, proposition) {
   updateDatabaseFromCanvas();
+  var marked = {};
   for (agent of agents) {
-    var marked = update_database_based_on_announcement(agent, proposition);
-    delete_relations(agent, marked);
+    marked[agent] = update_database_based_on_announcement(agent, proposition);
+  }
+  for (var agent in marked) {
+    delete_relations(agent, marked[agent]);
     var resetToPos = (announcementHistory.length !== currentTimelineIndex) ? currentTimelineIndex : -1;
     updateAnnouncementHistory(agent, proposition, resetToPos);
   }
