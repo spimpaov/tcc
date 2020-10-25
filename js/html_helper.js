@@ -36,6 +36,8 @@ function setAgentsAndPropositions() {
   var propositionsList = document.getElementById('propositions').value.split(",");
   createDatabase(agentsList, propositionsList);
   updateAnnouncementHistory(null, null, 0);
+  var lastTimelineBtn = document.getElementById("announcement-history-ol").lastChild.lastChild;
+  highlightTimelineBtn(lastTimelineBtn);
   convertDatabaseToCanvasGraph();
   createInitialDBTextInput(agentsList);
   renderOutput("✓", 'create-graph-output');
@@ -45,6 +47,8 @@ function makeAnnouncement() {
   var agents = document.getElementById("announcement-agent").value.split(",");
   var proposition = document.getElementById("announcement-proposition").value;
   private_announcement(agents, proposition);
+  var lastTimelineBtn = document.getElementById("announcement-history-ol").lastChild.lastChild;
+  highlightTimelineBtn(lastTimelineBtn);
   renderOutput("✓", 'announcement-output');
 }
 
@@ -68,24 +72,33 @@ function addButtonToAnnouncementTimeLine(agent, proposition) {
   ol.appendChild(li);
   var btn = document.createElement("BUTTON");
   li.appendChild(btn);
-
-  btn.addEventListener('click', function() {
-    var index = 0;
-    var previous = btn.parentElement.previousElementSibling;
-    while (previous) {
-      previous = previous.previousElementSibling;
-      index++;
-    }
-    currentTimelineIndex = index + 1;
-    database = lodash.cloneDeep(announcementHistory[index]);
-    convertDatabaseToCanvasGraph();
-  }, false);
-
+  btn.addEventListener('click', setPosInTimeline, false);
   if (agent === null && proposition === null) {
     btn.innerHTML = "grafo inicial";
   } else {
     btn.innerHTML = agent + " aprende " + proposition;
   }
+}
+
+function setPosInTimeline() {
+  var index = 0;
+  var previous = this.parentElement.previousElementSibling;
+  while (previous) {
+    previous = previous.previousElementSibling;
+    index++;
+  }
+  currentTimelineIndex = index + 1;
+  database = lodash.cloneDeep(announcementHistory[index]);
+  convertDatabaseToCanvasGraph();
+  highlightTimelineBtn(this)
+}
+
+function highlightTimelineBtn(btn) {
+  var ol = document.getElementById("announcement-history-ol");
+  for (li of ol.children) {
+    li.lastChild.classList.remove("timeline-btn-selected");
+  }
+  btn.className = "timeline-btn-selected";
 }
 
 function clearAnnouncementTimeline() {

@@ -2,7 +2,7 @@
   position: relative;
   /* border-style: groove; */
 }
-  
+
   /* The Modal (background) */
 .modal {
   display: none; /* Hidden by default */
@@ -28,11 +28,18 @@
 }
 
 #btn_helper{
-  float: right; 
+  float: right;
 }
 
 #code_text {
   font-family: 'Courier New', Courier, monospace;
   background-color: rgb(255, 255, 224);
   color: black;
+}
+
+.timeline-btn-selected {
+  background-color: rgb(90, 89, 89); /* Fallback color */
+  border: 1px solid rgb(172, 171, 171);
+  color: rgb(255, 255, 255);
+  /* font-weight: bold; */
 }

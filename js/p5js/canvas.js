@@ -146,6 +146,8 @@ function setup() {
   //default graph
   updateAnnouncementHistory(null, null, 0);
   convertDatabaseToCanvasGraph();
+  var lastTimelineBtn = document.getElementById("announcement-history-ol").lastChild.lastChild;
+  highlightTimelineBtn(lastTimelineBtn);
 }
 
 function convertDatabaseToCanvasGraph() {
