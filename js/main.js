@@ -336,8 +336,6 @@ function update_database_based_on_announcement(agent, proposition) {
     var s_result = calculate(stack.slice(0), stack.length - 1, s, database.states.slice(0)).value;
     var s_neighbors = get_all_state_neighbors(s, agent, database.states);
     for (let n of s_neighbors) {
-      // if ((!s.variables.includes(proposition) && n.variables.includes(proposition))
-      //   || s.variables.includes(proposition) && !n.variables.includes(proposition)) {
       var n_result = calculate(stack.slice(0), stack.length - 1, n, database.states.slice(0)).value;
         if (s_result != n_result) {
           marked.push(...get_symmetric_transition(s.name, n.name));
@@ -345,12 +343,6 @@ function update_database_based_on_announcement(agent, proposition) {
     }
   }
   return marked;
-  // for (t of marked) {
-  //   var t_index = database.relations.indexOf(t);
-  //   if (t_index > -1) {
-  //     delete_transition_from_database(t_index, agent);
-  //   }
-  // }
 }
 
 function delete_relations(agent, marked) {

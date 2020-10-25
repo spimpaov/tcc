@@ -34,15 +34,15 @@ let dragging = false;
 let lastMouse = {"x": 0, "y": 0};
 
 class myCircle {
-  constructor(x, y, variables, name = nextCircleID.toString()) {
+  constructor(x, y, variables, id, name = nextCircleID.toString()) {
     this.x = x;
     this.y = y;
     this.hover = false;
     this.editing = false;
+    this.id = (id !== undefined) ? id : nextCircleID++;
     if (name !== undefined) {
       this.name = name
     }
-    this.id = nextCircleID++;
     this.variables = variables;
   }
 
@@ -150,6 +150,7 @@ function setup() {
 
 function convertDatabaseToCanvasGraph() {
   var root = rootID;
+  var lastUsedID = 0;
   clearCanvas();
 
   // cria estados
@@ -164,7 +165,8 @@ function convertDatabaseToCanvasGraph() {
         stateXPos = Math.cos(i * 360/database.states.length * 2 * Math.PI/360) * 300 + xOffset;
         stateYPos = Math.sin(i * 360/database.states.length * 2 * Math.PI/360) * 300 + yOffset;
       }
-      createState(stateXPos, stateYPos, s.variables, s.name);
+      createState(stateXPos, stateYPos, s.variables, s.name, s.id);
+      lastUsedID = s.id;
     }
   );
 
@@ -179,6 +181,9 @@ function convertDatabaseToCanvasGraph() {
     }
   );
   setStateAsRoot(root);
+  if (lastUsedID !== undefined) {
+    nextCircleID = ++lastUsedID;
+  }
 }
 
 function draw() {
@@ -478,8 +483,8 @@ function deleteState(state) {
 }
 
 //adds a new state to states array and create a transtition for itself
-function createState(posX, posY, variables) {
-  var newState = new myCircle(posX, posY, variables);
+function createState(posX, posY, variables, id, name) {
+  var newState = new myCircle(posX, posY, variables, id, name);
   states.push(newState);
   createTransition(newState, newState);
   if (states.length === 1) { //primeiro estado criado
@@ -562,11 +567,11 @@ function getSisterTransition(t) {
 
 //print current states and transitions
 function printInfo() {
-  print("Number os states: " + states.length);
-  print("Number os transitions: " + transitions.length);
+  print("Number of states: " + states.length);
+  print("Number of transitions: " + transitions.length);
   print("CurrentStates: ");
   print(states);
-  print("CurrentTransitions:");
+  print("CurrentTransitions: ");
   print(transitions);
   print("Root ID: " + rootID);
   print("######Database######");
