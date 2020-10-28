@@ -52,7 +52,7 @@ function makeAnnouncement() {
   renderOutput("✓", 'announcement-output');
 }
 
-function updateAnnouncementHistory(agent, proposition, resetToPos = -1) {
+function updateAnnouncementHistory(agents, proposition, resetToPos = -1) {
   if (resetToPos !== -1) {
     var timeline = document.getElementById("announcement-history-ol");
     for (var i = announcementHistory.length-1; i >= resetToPos; i--) {
@@ -63,20 +63,20 @@ function updateAnnouncementHistory(agent, proposition, resetToPos = -1) {
   currentTimelineIndex++;
   var databaseClone = lodash.cloneDeep(database);
   announcementHistory.push(databaseClone);
-  addButtonToAnnouncementTimeLine(agent, proposition);
+  addButtonToAnnouncementTimeLine(agents, proposition);
 }
 
-function addButtonToAnnouncementTimeLine(agent, proposition) {
+function addButtonToAnnouncementTimeLine(agents, proposition) {
   var ol = document.getElementById("announcement-history-ol");
   var li = document.createElement("li");
   ol.appendChild(li);
   var btn = document.createElement("BUTTON");
   li.appendChild(btn);
   btn.addEventListener('click', setPosInTimeline, false);
-  if (agent === null && proposition === null) {
+  if (agents === null && proposition === null) {
     btn.innerHTML = "grafo inicial";
   } else {
-    btn.innerHTML = agent + " aprende " + proposition;
+    btn.innerHTML = agents + " aprende " + proposition;
   }
 }
 

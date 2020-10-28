@@ -363,9 +363,9 @@ function private_announcement(agents, proposition) {
   }
   for (var agent in marked) {
     delete_relations(agent, marked[agent]);
-    var resetToPos = (announcementHistory.length !== currentTimelineIndex) ? currentTimelineIndex : -1;
-    updateAnnouncementHistory(agent, proposition, resetToPos);
   }
+  var resetToPos = (announcementHistory.length !== currentTimelineIndex) ? currentTimelineIndex : -1;
+  updateAnnouncementHistory(agents, proposition, resetToPos);
   convertDatabaseToCanvasGraph();
 }
 
