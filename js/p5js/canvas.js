@@ -79,7 +79,7 @@ class myTransition {
     this.destinyState = destinyState;
     this.hover = false;
     this.editing = false;
-    this.source = originState.name;
+    this.source = originState.id;
     this.agents = agents;
   }
 
@@ -142,12 +142,7 @@ function setup() {
   var cnv = createCanvas(canvasWidth, canvasHeight);
   cnv.parent("sketchHolder");
   rectMode(RADIUS);
-
-  //default graph
-  updateAnnouncementHistory(null, null, 0);
-  convertDatabaseToCanvasGraph();
-  var lastTimelineBtn = document.getElementById("announcement-history-ol").lastChild.lastChild;
-  highlightTimelineBtn(lastTimelineBtn);
+  clearCanvas();
 }
 
 function convertDatabaseToCanvasGraph() {
@@ -275,7 +270,7 @@ function keyTyped() {
     if (touchedState !== null) {
       if (currentTransition !== null) { //fixate transition
         currentTransition.destinyState = touchedState;
-        currentTransition.target = touchedState.name;
+        currentTransition.target = touchedState.id;
         var sisterTransition = createTransition(currentTransition.destinyState, currentTransition.originState);
         deleteTransitionDuplicates(currentTransition);
         deleteTransitionDuplicates(sisterTransition);
@@ -508,7 +503,7 @@ function createTransition(origin, destiny, variables) {
   if (destiny === null) {
     currentTransition = transitions[transitions.length - 1];
   } else {
-    transition.target = destiny.name;
+    transition.target = destiny.id;
   }
   return transition;
 }

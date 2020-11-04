@@ -273,9 +273,9 @@ function get_op_string(array, index, forwards = true) {
   return {"op_string": op_string, "new_index": index};
 }
 
-// Obtém objeto 'estado' a partir do nome do estado
-function get_state_by_name(name) {
-  return database.states.find((f) => f.name == name);
+// Obtém objeto 'estado' a partir do id do estado
+function get_state_by_id(id) {
+  return database.states.find((f) => f.id == id);
 }
 
 // Retorna estado atual como array
@@ -286,10 +286,10 @@ function get_current_state(current_state, agent, valid_states) {
 // Retorna estados que são vizinhos do estado atual por transição do agente 'agent'
 function get_all_state_neighbors(current_state, agent, valid_states) {
   return database.relations
-    .filter((f) => f.source == current_state.name
+    .filter((f) => f.source == current_state.id
       && f.agents.includes(agent)
-      && valid_states.map((s) => s.name).includes(f.target))
-    .map((f) => get_state_by_name(f.target));
+      && valid_states.map((s) => s.id).includes(f.target))
+    .map((f) => get_state_by_id(f.target));
 }
 
 // Retorna primeiro resultado do array
@@ -302,11 +302,11 @@ function get_first_and_only_result(results) {
 }
 
 // Retorna array com o par de transições irmãs (source->target e target->source)
-function get_symmetric_transition(sourceName, targetName) {
+function get_symmetric_transition(sourceID, targetID) {
   var t = [];
   for (let i = 0; i < database.relations.length; i++) {
-    if ((database.relations[i].source === sourceName && database.relations[i].target === targetName)
-      || (database.relations[i].source === targetName && database.relations[i].target === sourceName)) {
+    if ((database.relations[i].source === sourceID && database.relations[i].target === targetID)
+      || (database.relations[i].source === targetID && database.relations[i].target === sourceID)) {
         t.push(database.relations[i]);
     }
   }
@@ -338,7 +338,7 @@ function update_database_based_on_announcement(agent, proposition) {
     for (let n of s_neighbors) {
       var n_result = calculate(stack.slice(0), stack.length - 1, n, database.states.slice(0)).value;
         if (s_result != n_result) {
-          marked.push(...get_symmetric_transition(s.name, n.name));
+          marked.push(...get_symmetric_transition(s.id, n.id));
       }
     }
   }
@@ -388,7 +388,7 @@ function is_valid_expression(expression) {
     }
     counter++;
   }
-
+  
   return counter == 1;
 }
 
