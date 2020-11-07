@@ -121,7 +121,6 @@ function createInitialDBTextInput(agents) {
     var agentInput = document.createElement('input');
     agentInput.type = 'text';
     agentInput.id = 'initial-db-' + agent;
-    agentInput.value = "'M''E" + agent + "(M)'>";
     agentSpan.appendChild(agentInput);
   }
 }
@@ -149,6 +148,14 @@ function clearInitialDatabase() {
 function renderOutput(output, id) {
   document.getElementById(id).textContent = output;
   handleFadeInEffect(id);
+}
+
+function clearOkOutputs() {
+  renderOutput("", 'load-example-output');
+  renderOutput("", 'create-graph-output');
+  renderOutput("", 'initial-db-output');
+  renderOutput("", 'announcement-output');
+  renderOutput("", 'result');
 }
 
 // [COSMÉTICO] Função de Fade-in

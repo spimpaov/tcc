@@ -547,6 +547,7 @@ function clearCanvas(clearTimeline = false, clearDatabase = false) {
   nextCircleID = 0;
   if (clearTimeline) clearAnnouncementTimeline();
   if (clearDatabase) clearInitialDatabase();
+  if (clearTimeline && clearDatabase) clearOkOutputs();
 }
 
 function getStateByID(id) {
