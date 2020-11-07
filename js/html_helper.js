@@ -132,6 +132,8 @@ function setInitialDatabase() {
     var agentDB = agentSpan.lastChild.value.replace(/\s/g,'').split(",");
     for (var proposition of agentDB) {
       private_announcement([agentSpan.agent], proposition);
+      var lastTimelineBtn = document.getElementById("announcement-history-ol").lastChild.lastChild;
+      highlightTimelineBtn(lastTimelineBtn);
     }
   }
   renderOutput("✓", 'initial-db-output');
