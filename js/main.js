@@ -331,9 +331,13 @@ function update_database_based_on_announcement(agent, proposition) {
   for (let character of proposition) {
     stack.push(character);
   }
-
   for (let s of database.states) {
-    var s_result = calculate(stack.slice(0), stack.length - 1, s, database.states.slice(0)).value;
+    try {
+      var s_result = calculate(stack.slice(0), stack.length - 1, s, database.states.slice(0)).value;
+    }
+    catch(err) {
+      return undefined;
+    }
     var s_neighbors = get_all_state_neighbors(s, agent, database.states);
     for (let n of s_neighbors) {
       var n_result = calculate(stack.slice(0), stack.length - 1, n, database.states.slice(0)).value;
@@ -361,12 +365,14 @@ function private_announcement(agents, proposition) {
   for (agent of agents) {
     marked[agent] = update_database_based_on_announcement(agent, proposition);
   }
-  for (var agent in marked) {
-    delete_relations(agent, marked[agent]);
+  if (marked[agent] !== undefined) {
+    for (var agent in marked) {
+      delete_relations(agent, marked[agent]);
+    }
+    var resetToPos = (announcementHistory.length !== currentTimelineIndex) ? currentTimelineIndex : -1;
+    updateAnnouncementHistory(agents, proposition, resetToPos);
+    convertDatabaseToCanvasGraph();
   }
-  var resetToPos = (announcementHistory.length !== currentTimelineIndex) ? currentTimelineIndex : -1;
-  updateAnnouncementHistory(agents, proposition, resetToPos);
-  convertDatabaseToCanvasGraph();
 }
 
 // Checa se expressão possui ordem de operandos e operadores válida
