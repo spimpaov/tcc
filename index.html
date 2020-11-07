@@ -57,9 +57,9 @@
         <div class="px-1 bg-light">
           <button type="button" id="btn_helper" onClick="openHelpText('modal_generate_graph')">?</button>
           <h5>Gerar Grafo</h5>
-          <input id="agents" type="text" value="a,b,c">
+          <input id="agents" type="text">
           <br>
-          <input id="propositions" type="text" value="'M','Eb(M)','Ec(M)'">
+          <input id="propositions" type="text">
           <button class="mt-1" onClick="setAgentsAndPropositions()">OK!</button>
           <br>
           <span id="create-graph-output"></span>
@@ -200,7 +200,7 @@
         <div class="px-1 bg-light">
           <button type="button" id="btn_helper" onClick="openHelpText('modal_announcement')">?</button>
           <h5>Anúncio Privado</h5>
-          <input id="announcement-agent" type="text" size="5" value="c"> aprende <input id="announcement-proposition" type="text" size="5"  value="'Eb(M)'">
+          <input id="announcement-agent" type="text" size="5"> aprende <input id="announcement-proposition" type="text" size="5">
           <button class="mt-1" onClick="makeAnnouncement()">OK!</button>
           <br>
           <span id="announcement-output"></span>
