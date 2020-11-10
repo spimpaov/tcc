@@ -13,6 +13,7 @@ let writingTransitionText = false;
 let stateRadius = 50;
 let nextCircleID = 0;
 let mouseInsideCanvas = false;
+let canvasIsActive = true;
 let knownAgents = ["a","b"];
 
 //lista de estados
@@ -185,66 +186,66 @@ function convertDatabaseToCanvasGraph() {
 
 function draw() {
   background(240);
-
-  //desenha texto durante modo de escrita
-  if (writingStateText) {
-    push();
-    textSize(18);
-    textAlign(RIGHT);
-    text('Nome:', 195, 70);
-    text('Variáveis:', 195, 105);
-    pop();
-  }
-
-  if (writingTransitionText) {
-    push();
-    textSize(18);
-    textAlign(RIGHT);
-    text('Agentes:', 195, 70);
-    pop();
-  }
-
-  translate(offset.x, offset.y);
-  scale(zoom);
-
-  mouseInsideCanvas = (mouseX >= 0 && mouseX <= canvasWidth && mouseY >= 0 && mouseY <= canvasHeight) ? true : false;
-
-  //reset states hover
-  for (let s of states) {
-    s.hover = false;
-  }
-  //hover touched state if any
-  if (!locked) {
-    touchedState = cursorInsideAnyCircle();
-  }
-  if (!writingText && !openHelper && touchedState !== null) {
-    touchedState.hover = true;
-  }
-
-  //reset transitions hover
-  for (let t of transitions) {
-    t.hover = false;
-  }
-
-  //hover touched transition if any
-  if (!writingText && !openHelper && touchedTransition !== null && currentTransition === null) {
-    touchedTransition.hover = true;
-    var touchedTransitionSister = getSisterTransition(touchedTransition);
-    if (touchedTransitionSister !== undefined) {
-      touchedTransitionSister.hover = true;
+  if (canvasIsActive) {
+    //desenha texto durante modo de escrita
+    if (writingStateText) {
+      push();
+      textSize(18);
+      textAlign(RIGHT);
+      text('Nome:', 195, 70);
+      text('Variáveis:', 195, 105);
+      pop();
     }
-  }
 
-  touchedTransition = cursorInsideAnyTransition();
+    if (writingTransitionText) {
+      push();
+      textSize(18);
+      textAlign(RIGHT);
+      text('Agentes:', 195, 70);
+      pop();
+    }
 
-  //desenha as transições
-  for (let i = 0; i < transitions.length; i++) {
-    transitions[i].display();
-  }
+    translate(offset.x, offset.y);
+    scale(zoom);
 
-  //desenha os estados
-  for (let i = 0; i < states.length; i++) {
-    states[i].display();
+    mouseInsideCanvas = (mouseX >= 0 && mouseX <= canvasWidth && mouseY >= 0 && mouseY <= canvasHeight) ? true : false;
+
+    //reset states hover
+    for (let s of states) {
+      s.hover = false;
+    }
+    //hover touched state if any
+    if (!locked) {
+      touchedState = cursorInsideAnyCircle();
+    }
+    if (!writingText && !openHelper && touchedState !== null) {
+      touchedState.hover = true;
+    }
+
+    //reset transitions hover
+    for (let t of transitions) {
+      t.hover = false;
+    }
+
+    //hover touched transition if any
+    if (!writingText && !openHelper && touchedTransition !== null && currentTransition === null) {
+      touchedTransition.hover = true;
+      var touchedTransitionSister = getSisterTransition(touchedTransition);
+      if (touchedTransitionSister !== undefined) {
+        touchedTransitionSister.hover = true;
+      }
+    }
+    touchedTransition = cursorInsideAnyTransition();
+
+    //desenha as transições
+    for (let i = 0; i < transitions.length; i++) {
+      transitions[i].display();
+    }
+  
+    //desenha os estados
+    for (let i = 0; i < states.length; i++) {
+      states[i].display();
+    }
   }
 }
 

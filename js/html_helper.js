@@ -145,6 +145,18 @@ function clearInitialDatabase() {
   }
 }
 
+function toggleCanvas() {
+  var btnText;
+  if (canvasIsActive) {
+    canvasIsActive = false;
+    btnText = "Ativar Canvas";
+  } else {
+    canvasIsActive = true;
+    btnText = "Desativar Canvas";
+  }
+  document.getElementById("toggleCanvas").textContent = btnText;
+}
+
 function renderOutput(output, id) {
   document.getElementById(id).textContent = output;
   handleFadeInEffect(id);

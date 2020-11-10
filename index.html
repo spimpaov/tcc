@@ -225,6 +225,7 @@
         <h5>Canvas</h5>
         <div id="sketchHolder"></div>
         <button class="mt-1" onClick="clearCanvas('true','true')">Apagar canvas</button>
+        &emsp;<button type="button" id="toggleCanvas" onClick="toggleCanvas()">Desativar Canvas</button>
         &emsp;<button type="button" onClick="openHelpText('modal_canvas')">?</button>
         <div id="modal_canvas" class="modal">
           <div class="modal-content">
@@ -235,6 +236,7 @@
                 <li>Apertar 's' cria um novo estado na posição atual do cursor do mouse.</li>
                 <li>Apertar 's' enquanto o cursor do mouse está sobre um estado já criado apaga tanto o estado quanto as transições que o tinham como origem ou destino. O mouse está sobre um estado quando a cor do estado se altera (de cinza para rosa).</li>
                 <li>É possível alterar a posição atual de um determinado estado clicando com o botão esquerdo do mouse sobre ele e o arrastando enquanto mantém o botão pressionado.</li>
+                <li>O estado de menor ID é por padrão definido como a raiz do grafo. Para definir um outro estado como raiz, pressione 'r' enquanto o mouse está sobre o estado desejado.</li>
               </ul>
               <b>Conectando estados</b>
               <ul>
@@ -253,6 +255,11 @@
               <ul>
                 <li>É possível alterar o zoom atual do canvas através do scroll do mouse.</li>
                 <li>Para alterar o posicionamento global do canvas, basta clicar e arrastar a tela até o local desejado. O mouse precisa estar dentro dos limites do canvas e não pode estar tocando nenhum estado ou transição.</li>
+              </ul>
+              <b>Apagar ou desativar o canvas</b>
+              <ul>
+                <li>Para apagar o grafo desenhado, aperte em 'Apagar canvas'.</li>
+                <li>O Canvas pode ser ativado ou desativado através do botão 'Ativar/Desativar Canvas'. Isso é útil para quando o grafo gerado é muito grande, possivelmente tornando a interface mais lenta. Nesses casos, é recomendável fazer as demais operações na interface com o Canvas desativado.</li>
               </ul>
               <b>Imprimindo informação sobre o estado atual do programa</b>
               <ul>
