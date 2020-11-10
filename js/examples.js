@@ -56,6 +56,28 @@ let examples = [
       {"c": "'Ea(Mb)'"},
     ],
   },
+  {
+    "id" : "dolev-yao-example-3",
+    "name": "Dolev Yao Exemplo 3",
+    "estado_real" : "31",
+    "gerar_grafo": {
+      "agents": "a,b,c",
+      "propositions": "'M','Eb(Eb(M)a)','Ea(Ea(Ea(M)b)c)','Ec(Ec(Ea(M)b)a)','Ec(Ec(M)a)'",
+    },
+    "conhecimento_inicial": {
+      "a": "'M','M''Ea(Ea(Ea(M)b)c)'>",
+      "b": "'M''Eb(Eb(M)a)'>",
+      "c": "'Ea(M)''Ec(Ec(Ea(M)b)a)'>,'M''Ec(Ec(M)a)'>",
+    },
+    "anuncio_privado": [
+      {"b": "'Eb(Eb(M)a)'"},
+      {"c": "'Ea(Ea(M)b)'"},
+      {"a": "'Ea(Ea(Ea(M)b)c)'"},
+      {"c": "'Ec(Ec(Ea(M)b)a)'"},
+      {"a": "'Ea(Ea(M)c)'"},
+      {"c": "'Ec(Ec(M)a)'"},
+    ],
+  },
 ]
 
 function listExamplesInDropdown() {
