@@ -15,7 +15,7 @@ let examples = [
     "anuncio_privado": [
       {"a,b,c": "'ana''beto'U'carla'U"},
       {"a,b,c": "'ana'{*a}'ana'!{*a}U!'beto'{*b}'beto'!{*b}U!^'carla'{*c}'carla'!{*c}U!^"},
-      {"a,b,c": "'ana'{*a}'ana'!{*a}U!'beto'{*b}'beto'!{*b}U!^'carla'{*c}'carla'!{*c}U!^"},
+      {"a,b,c": "'ana'{*a}'beto'{*b}^'carla'{*c}!^'carla'!{*c}!^"},
     ],
   },
   {
@@ -23,18 +23,18 @@ let examples = [
     "name": "Dolev Yao Exemplo 1",
     "estado_real" : "7",
     "gerar_grafo": {
-      "agents": "a,b,c",
-      "propositions": "'M','Eb(M)','Ec(M)'",
+      "agents": "a,b,z",
+      "propositions": "'M','Eb(M)','Ez(M)'",
     },
     "conhecimento_inicial": {
       "a": "'M','M''Ea(M)'>",
       "b": "'M''Eb(M)'>",
-      "c": "'M''Ec(M)'>",
+      "z": "'M''Ez(M)'>",
     },
     "anuncio_privado": [
-      {"c": "'Eb(M)'"},
+      {"z": "'Eb(M)'"},
       {"b": "'Eb(M)'"},
-      {"c": "'Ec(M)'"},
+      {"z": "'Ez(M)'"},
     ],
   },
   {
@@ -42,18 +42,18 @@ let examples = [
     "name": "Dolev Yao Exemplo 2",
     "estado_real" : "7",
     "gerar_grafo": {
-      "agents": "a,b,c",
+      "agents": "a,b,z",
       "propositions": "'M','Eb(Ma)','Ea(Mb)'",
     },
     "conhecimento_inicial": {
       "a": "'M','M''Ea(Mb)'>",
       "b": "'M''Eb(Ma)'>",
-      "c": "'M''Ec(Ma)'>,'M''Ec(Mb)'>",
+      "z": "'M''Ez(Ma)'>,'M''Ez(Mb)'>",
     },
     "anuncio_privado": [
-      {"c": "'Eb(Ma)'"},
+      {"z": "'Eb(Ma)'"},
       {"b": "'Eb(Ma)'"},
-      {"c": "'Ea(Mb)'"},
+      {"z": "'Ea(Mb)'"},
     ],
   },
   {
@@ -61,21 +61,21 @@ let examples = [
     "name": "Dolev Yao Exemplo 3",
     "estado_real" : "31",
     "gerar_grafo": {
-      "agents": "a,b,c",
-      "propositions": "'M','Eb(Eb(M)a)','Ea(Ea(Ea(M)b)c)','Ec(Ec(Ea(M)b)a)','Ec(Ec(M)a)'",
+      "agents": "a,b,z",
+      "propositions": "'M','Eb(Eb(M)a)','Ea(Ea(Ea(M)b)z)','Ez(Ez(Ea(M)b)a)','Ez(Ez(M)a)'",
     },
     "conhecimento_inicial": {
-      "a": "'M','M''Ea(Ea(Ea(M)b)c)'>",
+      "a": "'M','M''Ea(Ea(Ea(M)b)z)'>",
       "b": "'M''Eb(Eb(M)a)'>",
-      "c": "'Ea(M)''Ec(Ec(Ea(M)b)a)'>,'M''Ec(Ec(M)a)'>",
+      "z": "'Ea(M)''Ez(Ez(Ea(M)b)a)'>,'M''Ez(Ez(M)a)'>",
     },
     "anuncio_privado": [
       {"b": "'Eb(Eb(M)a)'"},
-      {"c": "'Ea(Ea(M)b)'"},
-      {"a": "'Ea(Ea(Ea(M)b)c)'"},
-      {"c": "'Ec(Ec(Ea(M)b)a)'"},
-      {"a": "'Ea(Ea(M)c)'"},
-      {"c": "'Ec(Ec(M)a)'"},
+      {"z": "'Ea(Ea(M)b)'"},
+      {"a": "'Ea(Ea(Ea(M)b)z)'"},
+      {"z": "'Ez(Ez(Ea(M)b)a)'"},
+      {"a": "'Ea(Ea(M)z)'"},
+      {"z": "'Ez(Ez(M)a)'"},
     ],
   },
 ]
