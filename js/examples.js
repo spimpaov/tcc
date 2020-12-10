@@ -80,7 +80,14 @@ let examples = [
   },
 ]
 
+function loadExampleDolev3JSON() {
+  var data = JSON.parse(dolevJson);
+  console.log(data.length);
+  examples.push(data);
+}
+
 function listExamplesInDropdown() {
+  loadExampleDolev3JSON();
   var dropdown = document.getElementById("examples-dropdown");
   examples.forEach(e => {
     var option = document.createElement("option");
@@ -97,27 +104,34 @@ function setExampleToBeLoaded() {
 }
 
 function loadExample(e) {
-  //gerar grafo
-  document.getElementById('agents').value = e.gerar_grafo.agents;
-  document.getElementById('propositions').value = e.gerar_grafo.propositions;
-  setAgentsAndPropositions();
+  if (e.id === "dolev-yao-example-3-v2") {
+    addGraphToTimeline(e.timeline[0], 0);
+    for (let i = 1; i < e.timeline.length; i++) {
+      addGraphToTimeline(e.timeline[i]);
+    }
 
+  } else {
+    //gerar grafo
+    document.getElementById('agents').value = e.gerar_grafo.agents;
+    document.getElementById('propositions').value = e.gerar_grafo.propositions;
+    setAgentsAndPropositions();
+
+    //setar conhecimento inicial
+    for (agent of e.gerar_grafo.agents.split(",")) {
+      document.getElementById("initial-db-" + agent).value = e.conhecimento_inicial[agent];
+    }
+    setInitialDatabase();
+
+    //anuncios privados
+    for (var announce of e.anuncio_privado) {
+      var key = Object.keys(announce)[0];
+      document.getElementById("announcement-agent").value = key;
+      document.getElementById("announcement-proposition").value = announce[key];
+      makeAnnouncement();
+    }
+  }
   // define estado real
   rootID = e.estado_real;
-
-  //setar conhecimento inicial
-  for (agent of e.gerar_grafo.agents.split(",")) {
-    document.getElementById("initial-db-" + agent).value = e.conhecimento_inicial[agent];
-  }
-  setInitialDatabase();
-
-  //anuncios privados
-  for (var announce of e.anuncio_privado) {
-    var key = Object.keys(announce)[0];
-    document.getElementById("announcement-agent").value = key;
-    document.getElementById("announcement-proposition").value = announce[key];
-    makeAnnouncement();
-  }
 
   //volta para a posição do grafo inicial
   var firstBtn = document.getElementById("announcement-history-ol").firstChild.firstChild;

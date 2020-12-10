@@ -241,7 +241,7 @@ function draw() {
     for (let i = 0; i < transitions.length; i++) {
       transitions[i].display();
     }
-  
+
     //desenha os estados
     for (let i = 0; i < states.length; i++) {
       states[i].display();

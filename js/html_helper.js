@@ -73,7 +73,7 @@ function addButtonToAnnouncementTimeLine(agents, proposition) {
   var btn = document.createElement("BUTTON");
   li.appendChild(btn);
   btn.addEventListener('click', setPosInTimeline, false);
-  if (agents === null && proposition === null) {
+  if ((agents === null && proposition === null) || (agents === "" && proposition === "")) {
     btn.innerHTML = "grafo inicial";
   } else {
     btn.innerHTML = agents + " aprende " + proposition;
@@ -182,4 +182,9 @@ function openHelpText(id) {
   openHelper = true;
   var modal = document.getElementById(id);
   modal.style.display = "block";
+}
+
+function addGraphToTimeline(databaseJson, resetToPos = -1) {
+  database = databaseJson;
+  updateAnnouncementHistory(databaseJson.agents, databaseJson.propositions, resetToPos);
 }
