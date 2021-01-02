@@ -2,13 +2,8 @@
 let database = {
   // Um estado possui um 'nome' e um conjunto de 'variáveis' que são verdadeiras naquele estado
   "states": [
-    {
-      "name": "0",
-      "variables": ["m"]
-    }, {
-      "name": "1",
-      "variables": ["m"]
-    }
+    {"id": 0, "variables": []},
+    {"id": 1, "variables": ["'M'"]}
   ],
   // As transições entre estados são definidas por um estado 'origem', um estado 'destino' e um conjunto de 'agentes' referentes àquela transição
   "relations": [
@@ -18,8 +13,9 @@ let database = {
     {"source": "1", "target": "1", "agents": ["a", "b"]}
   ],
   "agents": ["a","b"],
-  "propositions": ["m"]
+  "propositions": ["'M'"],
 }
+let rootID = 0;
 
 // Classe de 'operador'
 const operator = class {
@@ -137,8 +133,7 @@ function calculate_input(expression) {
     stack.push(character);
   }
 
-  // Raiz é o estado inicial
-  var root_state = database.states[0];
+  var root_state = database.states.find((f) => f.id == rootID);
   // Checa se expressão é válida
   if (is_valid_expression(stack)) {
     // Calcula o valor da expressão começando no fim da pilha. Esta função é recursiva e esta chamada em
@@ -212,8 +207,8 @@ function calculate(stack, index, state, valid_states) {
     return {"index": deepest_index, "value": operator.validate_results(operation_results)};
   }
 
-  print("index: " + index + ", op_string: " + op_string);
-  print({"index": index, "value": get_variable_value_at_state(op_string, state)});
+  // print("index: " + index + ", op_string: " + op_string);
+  // print({"index": index, "value": get_variable_value_at_state(op_string, state)});
 
   // Caso caractere atual não seja um operador, retorna seu valor no estado atual
   return {"index": index, "value": get_variable_value_at_state(op_string, state)};
@@ -254,11 +249,21 @@ function get_op_string(array, index, forwards = true) {
       for (i = index_start_char; i < array.length && array[i] != "}"; i++);
       index_end_char = i;
       index = index_end_char;
+    } else if (op_string == "'") {
+      var i = index_start_char+1;
+      for (i = index_start_char+1; i < array.length && array[i] != "'"; i++);
+      index_end_char = i;
+      index = index_end_char;
     }
   } else /*backwards*/ {
     if (op_string == "}") {
       var i = 0;
       for (i = index_end_char; i >= 0 && array[i] != "{"; i--);
+      index_start_char = i;
+      index = index_start_char;
+    } else if ( op_string == "'") {
+      var i = index_end_char-1;
+      for (i = index_end_char-1; i >= 0 && array[i] != "'"; i--);
       index_start_char = i;
       index = index_start_char;
     }
@@ -268,9 +273,9 @@ function get_op_string(array, index, forwards = true) {
   return {"op_string": op_string, "new_index": index};
 }
 
-// Obtém objeto 'estado' a partir do nome do estado
-function get_state_by_name(name) {
-  return database.states.find((f) => f.name == name);
+// Obtém objeto 'estado' a partir do id do estado
+function get_state_by_id(id) {
+  return database.states.find((f) => f.id == id);
 }
 
 // Retorna estado atual como array
@@ -281,10 +286,10 @@ function get_current_state(current_state, agent, valid_states) {
 // Retorna estados que são vizinhos do estado atual por transição do agente 'agent'
 function get_all_state_neighbors(current_state, agent, valid_states) {
   return database.relations
-    .filter((f) => f.source == current_state.name
+    .filter((f) => f.source == current_state.id
       && f.agents.includes(agent)
-      && valid_states.map((s) => s.name).includes(f.target))
-    .map((f) => get_state_by_name(f.target));
+      && valid_states.map((s) => s.id).includes(f.target))
+    .map((f) => get_state_by_id(f.target));
 }
 
 // Retorna primeiro resultado do array
@@ -297,11 +302,11 @@ function get_first_and_only_result(results) {
 }
 
 // Retorna array com o par de transições irmãs (source->target e target->source)
-function get_symmetric_transition(sourceName, targetName) {
+function get_symmetric_transition(sourceID, targetID) {
   var t = [];
   for (let i = 0; i < database.relations.length; i++) {
-    if ((database.relations[i].source === sourceName && database.relations[i].target === targetName)
-      || (database.relations[i].source === targetName && database.relations[i].target === sourceName)) {
+    if ((database.relations[i].source === sourceID && database.relations[i].target === targetID)
+      || (database.relations[i].source === targetID && database.relations[i].target === sourceID)) {
         t.push(database.relations[i]);
     }
   }
@@ -322,20 +327,51 @@ function delete_transition_from_database(index, agent) {
 // Apaga transições de acordo com o anúncio privado feito
 function update_database_based_on_announcement(agent, proposition) {
   var marked = [];
+  var stack = []
+  for (let character of proposition) {
+    stack.push(character);
+  }
   for (let s of database.states) {
+    try {
+      var s_result = calculate(stack.slice(0), stack.length - 1, s, database.states.slice(0)).value;
+    }
+    catch(err) {
+      return undefined;
+    }
     var s_neighbors = get_all_state_neighbors(s, agent, database.states);
     for (let n of s_neighbors) {
-      if ((!s.variables.includes(proposition) && n.variables.includes(proposition))
-        || s.variables.includes(proposition) && !n.variables.includes(proposition)) {
-          marked.push(...get_symmetric_transition(s.name, n.name));
+      var n_result = calculate(stack.slice(0), stack.length - 1, n, database.states.slice(0)).value;
+        if (s_result != n_result) {
+          marked.push(...get_symmetric_transition(s.id, n.id));
       }
     }
   }
+  return marked;
+}
+
+function delete_relations(agent, marked) {
   for (t of marked) {
     var t_index = database.relations.indexOf(t);
     if (t_index > -1) {
       delete_transition_from_database(t_index, agent);
     }
+  }
+}
+
+// Atualiza o grafo baseado num anúncio privado feito
+function private_announcement(agents, proposition) {
+  updateDatabaseFromCanvas();
+  var marked = {};
+  for (agent of agents) {
+    marked[agent] = update_database_based_on_announcement(agent, proposition);
+  }
+  if (marked[agent] !== undefined) {
+    for (var agent in marked) {
+      delete_relations(agent, marked[agent]);
+    }
+    var resetToPos = (announcementHistory.length !== currentTimelineIndex) ? currentTimelineIndex : -1;
+    updateAnnouncementHistory(agents, proposition, resetToPos);
+    convertDatabaseToCanvasGraph();
   }
 }
 
@@ -358,7 +394,7 @@ function is_valid_expression(expression) {
     }
     counter++;
   }
-
+  
   return counter == 1;
 }
 

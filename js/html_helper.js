@@ -32,28 +32,27 @@ function updateDatabaseFromCanvas() {
 }
 
 function setAgentsAndPropositions() {
-  var agents = document.getElementById('agents').value;
-  var propositions = document.getElementById('propositions').value;
-  var agentsList = agents.split(",");
-  var propositionsList = propositions.split(",");
-  database = createDatabase(agentsList, propositionsList);
+  var agentsList = document.getElementById('agents').value.split(",");
+  var propositionsList = document.getElementById('propositions').value.split(",");
+  createDatabase(agentsList, propositionsList);
   updateAnnouncementHistory(null, null, 0);
+  var lastTimelineBtn = document.getElementById("announcement-history-ol").lastChild.lastChild;
+  highlightTimelineBtn(lastTimelineBtn);
   convertDatabaseToCanvasGraph();
+  createInitialDBTextInput(agentsList);
   renderOutput("✓", 'create-graph-output');
 }
 
 function makeAnnouncement() {
-  var agent = document.getElementById("announcement-agent").value;
+  var agents = document.getElementById("announcement-agent").value.split(",");
   var proposition = document.getElementById("announcement-proposition").value;
-  updateDatabaseFromCanvas();
-  update_database_based_on_announcement(agent, proposition);
-  var resetToPos = (announcementHistory.length !== currentTimelineIndex) ? currentTimelineIndex : -1;
-  updateAnnouncementHistory(agent, proposition, resetToPos);
-  convertDatabaseToCanvasGraph();
+  private_announcement(agents, proposition);
+  var lastTimelineBtn = document.getElementById("announcement-history-ol").lastChild.lastChild;
+  highlightTimelineBtn(lastTimelineBtn);
   renderOutput("✓", 'announcement-output');
 }
 
-function updateAnnouncementHistory(agent, proposition, resetToPos = -1) {
+function updateAnnouncementHistory(agents, proposition, resetToPos = -1) {
   if (resetToPos !== -1) {
     var timeline = document.getElementById("announcement-history-ol");
     for (var i = announcementHistory.length-1; i >= resetToPos; i--) {
@@ -64,47 +63,111 @@ function updateAnnouncementHistory(agent, proposition, resetToPos = -1) {
   currentTimelineIndex++;
   var databaseClone = lodash.cloneDeep(database);
   announcementHistory.push(databaseClone);
-  addButtonToAnnouncementTimeLine(agent, proposition);
+  addButtonToAnnouncementTimeLine(agents, proposition);
 }
 
-function addButtonToAnnouncementTimeLine(agent, proposition) {
+function addButtonToAnnouncementTimeLine(agents, proposition) {
   var ol = document.getElementById("announcement-history-ol");
   var li = document.createElement("li");
   ol.appendChild(li);
   var btn = document.createElement("BUTTON");
   li.appendChild(btn);
-
-  btn.addEventListener('click', function() {
-    var index = 0;
-    var previous = btn.parentElement.previousElementSibling;
-    while (previous) {
-      previous = previous.previousElementSibling;
-      index++;   
-    }
-    currentTimelineIndex = index + 1;
-    database = lodash.cloneDeep(announcementHistory[index]);
-    convertDatabaseToCanvasGraph();
-  }, false);
-
-  if (agent === null && proposition === null) {
+  btn.addEventListener('click', setPosInTimeline, false);
+  if ((agents === null && proposition === null) || (agents === "" && proposition === "")) {
     btn.innerHTML = "grafo inicial";
   } else {
-    btn.innerHTML = agent + " aprende " + proposition;
+    btn.innerHTML = agents + " aprende " + proposition;
   }
+}
+
+function setPosInTimeline() {
+  var index = 0;
+  var previous = this.parentElement.previousElementSibling;
+  while (previous) {
+    previous = previous.previousElementSibling;
+    index++;
+  }
+  currentTimelineIndex = index + 1;
+  database = lodash.cloneDeep(announcementHistory[index]);
+  convertDatabaseToCanvasGraph();
+  highlightTimelineBtn(this)
+}
+
+function highlightTimelineBtn(btn) {
+  var ol = document.getElementById("announcement-history-ol");
+  for (li of ol.children) {
+    li.lastChild.classList.remove("timeline-btn-selected");
+  }
+  btn.className = "timeline-btn-selected";
 }
 
 function clearAnnouncementTimeline() {
   announcementHistory = [];
   var ol = document.getElementById("announcement-history-ol");
   while (ol.lastChild) {
-    print(ol.lastChild);
     ol.removeChild(ol.lastChild);
   }
+}
+
+function createInitialDBTextInput(agents) {
+  clearInitialDatabase();
+  var initialDBInputs = document.getElementById("initial-db-inputs");
+  for (var agent of agents) {
+    var agentSpan = document.createElement('span');
+    agentSpan.innerHTML = "<br>" + agent + ": ";
+    agentSpan.agent = agent;
+    initialDBInputs.appendChild(agentSpan);
+
+    var agentInput = document.createElement('input');
+    agentInput.type = 'text';
+    agentInput.id = 'initial-db-' + agent;
+    agentSpan.appendChild(agentInput);
+  }
+}
+
+function setInitialDatabase() {
+  var initialDBInputs = document.getElementById("initial-db-inputs");
+  for (var agentSpan of initialDBInputs.childNodes) {
+    var agentDB = agentSpan.lastChild.value.replace(/\s/g,'').split(",");
+    for (var proposition of agentDB) {
+      private_announcement([agentSpan.agent], proposition);
+      var lastTimelineBtn = document.getElementById("announcement-history-ol").lastChild.lastChild;
+      highlightTimelineBtn(lastTimelineBtn);
+    }
+  }
+  renderOutput("✓", 'initial-db-output');
+}
+
+function clearInitialDatabase() {
+  var initialDBInputs = document.getElementById("initial-db-inputs");
+  while (initialDBInputs.lastChild) {
+    initialDBInputs.removeChild(initialDBInputs.lastChild);
+  }
+}
+
+function toggleCanvas() {
+  var btnText;
+  if (canvasIsActive) {
+    canvasIsActive = false;
+    btnText = "Ativar Canvas";
+  } else {
+    canvasIsActive = true;
+    btnText = "Desativar Canvas";
+  }
+  document.getElementById("toggleCanvas").textContent = btnText;
 }
 
 function renderOutput(output, id) {
   document.getElementById(id).textContent = output;
   handleFadeInEffect(id);
+}
+
+function clearOkOutputs() {
+  renderOutput("", 'load-example-output');
+  renderOutput("", 'create-graph-output');
+  renderOutput("", 'initial-db-output');
+  renderOutput("", 'announcement-output');
+  renderOutput("", 'result');
 }
 
 // [COSMÉTICO] Função de Fade-in
@@ -116,6 +179,12 @@ function handleFadeInEffect(id) {
 }
 
 function openHelpText(id) {
+  openHelper = true;
   var modal = document.getElementById(id);
   modal.style.display = "block";
+}
+
+function addGraphToTimeline(databaseJson, resetToPos = -1) {
+  database = databaseJson;
+  updateAnnouncementHistory(databaseJson.agents, databaseJson.propositions, resetToPos);
 }
