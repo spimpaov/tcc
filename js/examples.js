@@ -80,14 +80,16 @@ let examples = [
   },
 ]
 
+// Carrega JSON do Exemplo 3 Dolev Yao pré-processado (para demonstração)
 function loadExampleDolev3JSON() {
   var data = JSON.parse(dolevJson);
-  console.log(data.length);
   examples.push(data);
 }
 
+// Monta dropdown de opções em 'Carregar Exemplo' baseado nos exemplos definidos em código
 function listExamplesInDropdown() {
   loadExampleDolev3JSON();
+
   var dropdown = document.getElementById("examples-dropdown");
   examples.forEach(e => {
     var option = document.createElement("option");
@@ -97,13 +99,17 @@ function listExamplesInDropdown() {
   });
 }
 
+// Seleciona exemplo que será carregado
 function setExampleToBeLoaded() {
   var setted = document.getElementById("examples-dropdown").value;
   loadExample(examples.find(f => f.id === setted));
   renderOutput("✓", "load-example-output");
 }
 
+// Preenche todos os campos da interface e processa as funções para simular completamente o exemplo selecionado
 function loadExample(e) {
+
+  // Caso específico do Dolev Yao 3 (para demonstração)
   if (e.id === "dolev-yao-example-3-v2") {
     addGraphToTimeline(e.timeline[0], 0);
     for (let i = 1; i < e.timeline.length; i++) {
@@ -111,18 +117,18 @@ function loadExample(e) {
     }
 
   } else {
-    //gerar grafo
+    // Gerar grafo
     document.getElementById('agents').value = e.gerar_grafo.agents;
     document.getElementById('propositions').value = e.gerar_grafo.propositions;
     setAgentsAndPropositions();
 
-    //setar conhecimento inicial
+    // Setar conhecimento inicial
     for (agent of e.gerar_grafo.agents.split(",")) {
       document.getElementById("initial-db-" + agent).value = e.conhecimento_inicial[agent];
     }
     setInitialDatabase();
 
-    //anuncios privados
+    // Fazer anúncios privados
     for (var announce of e.anuncio_privado) {
       var key = Object.keys(announce)[0];
       document.getElementById("announcement-agent").value = key;
@@ -130,10 +136,11 @@ function loadExample(e) {
       makeAnnouncement();
     }
   }
-  // define estado real
+
+  // Define estado real
   rootID = e.estado_real;
 
-  //volta para a posição do grafo inicial
+  // Volta para a posição do grafo inicial
   var firstBtn = document.getElementById("announcement-history-ol").firstChild.firstChild;
   firstBtn.click();
 }
