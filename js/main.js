@@ -1,20 +1,9 @@
-// Banco de dados default do programa
+// Banco de dados que descreve o grafo
 let database = {
-  // Um estado possui um 'nome' e um conjunto de 'variáveis' que são verdadeiras naquele estado
-  "states": [
-    {"id": 0, "variables": []},
-    {"id": 1, "variables": ["'M'"]}
-  ],
-  // As transições entre estados são definidas por um estado 'origem', um estado 'destino' e um conjunto de 'agentes' referentes àquela transição
-  "relations": [
-    {"source": "0", "target": "0", "agents": ["a", "b"]},
-    {"source": "0", "target": "1", "agents": ["a", "b"]},
-    {"source": "1", "target": "0", "agents": ["a", "b"]},
-    {"source": "1", "target": "1", "agents": ["a", "b"]}
-  ],
   "agents": ["a","b"],
-  "propositions": ["'M'"],
 }
+
+// Raiz do grafo
 let rootID = 0;
 
 // Classe de 'operador'
@@ -207,9 +196,6 @@ function calculate(stack, index, state, valid_states) {
     return {"index": deepest_index, "value": operator.validate_results(operation_results)};
   }
 
-  // print("index: " + index + ", op_string: " + op_string);
-  // print({"index": index, "value": get_variable_value_at_state(op_string, state)});
-
   // Caso caractere atual não seja um operador, retorna seu valor no estado atual
   return {"index": index, "value": get_variable_value_at_state(op_string, state)};
 }
@@ -297,7 +283,6 @@ function get_first_and_only_result(results) {
   if (results.length != 1) {
     return throw_error();
   }
-
   return results[0];
 }
 
@@ -315,46 +300,78 @@ function get_symmetric_transition(sourceID, targetID) {
 
 // Retorna uma lista de transições que devem ser apagadas do grafo baseado no anúncio realizado
 function update_database_based_on_announcement(agents, proposition) {
+  var marked = {};
+  var stack = [];
 
-// Apaga transições de acordo com o anúncio privado feito
-function update_database_based_on_announcement(agent, proposition) {
-  var marked = [];
-  var stack = []
+  // Monta o stack baseado na pergunta
   for (let character of proposition) {
     stack.push(character);
   }
-  for (let s of database.states) {
-    try {
+
+  for (let a of agents) {
+    marked[a] = [];
+
+    for (let s of database.states) {
+      try {
         // Calcula o resultado da pergunta para um estado 's' do grafo
         var s_result = calculate(stack.slice(0), stack.length - 1, s, database.states.slice(0)).value;
-    var s_neighbors = get_all_state_neighbors(s, agent, database.states);
-    for (let n of s_neighbors) {
+      }
+      catch(err) {
+        return undefined;
+      }
+
+      var s_neighbors = get_all_state_neighbors(s, a, database.states);
+      for (let n of s_neighbors) {
         // Calcula o resultado da pergunta para um vizinho imediato 'n' do estado 's' por 'a'
         var n_result = calculate(stack.slice(0), stack.length - 1, n, database.states.slice(0)).value;
 
         if (s_result != n_result) {
           // Se o resultado da pergunta em 's' for diferente do resultado em 'n',
           // marca a transição entre eles para ser posteriormente removida do grafo
+          marked[a].push(...get_symmetric_transition(s.id, n.id));
+        }
+      }
+    }
+  }
+
   return marked;
 }
 
 // Remove do grafo transições de um determinado agente
+function delete_relations(marked) {
+  for (a in marked) {
+    for (t of marked[a]) {
+      var t_index = database.relations.indexOf(t);
+      if (t_index > -1) {
+        let a_index = database.relations[t_index].agents.indexOf(a);
         if (a_index > -1) {
           // Atualiza lista de agentes da transição removendo o agente 'a'
+          database.relations[t_index].agents = database.relations[t_index].agents.filter(f => f != a);
+        }
+        for (r of database.relations) {
           // Se a lista de agentes da transição ficou vazia, apaga a transição completamente
           database.relations = database.relations.filter(f => f.agents.length !== 0);
+        }
+      }
+    }
+
   }
 }
 
 // Atualiza o grafo baseado num anúncio privado feito
 function private_announcement(agents, proposition) {
   updateDatabaseFromCanvas();
+
+  if (proposition != '') {
     // Marca as transições que precisam ser removidas e depois apaga elas
     // Precisam ser dois passos separados para garantir que não haja inconsistência em anúncios para um conjunto de agentes
     var marked = update_database_based_on_announcement(agents, proposition);
+    delete_relations(marked);
+
     // Atualiza timeline de anúncios
     var resetToPos = (announcementHistory.length !== currentTimelineIndex) ? currentTimelineIndex : -1;
     updateAnnouncementHistory(agents, proposition, resetToPos);
+
     convertDatabaseToCanvasGraph();
   }
 }
@@ -378,7 +395,6 @@ function is_valid_expression(expression) {
     }
     counter++;
   }
-  
   return counter == 1;
 }
 
