@@ -111,9 +111,11 @@ function loadExample(e) {
 
   // Caso específico do Dolev Yao 3 (para demonstração)
   if (e.id === "dolev-yao-example-3-v2") {
-    addGraphToTimeline(e.timeline[0], 0);
+    database = e.timeline[0];
+    updateAnnouncementHistory(database.agents, database.propositions, 0);
     for (let i = 1; i < e.timeline.length; i++) {
-      addGraphToTimeline(e.timeline[i]);
+      database = e.timeline[i];
+      updateAnnouncementHistory(database.agents, database.propositions);
     }
 
   } else {

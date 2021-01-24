@@ -369,6 +369,11 @@ function private_announcement(agents, proposition) {
     delete_relations(marked);
 
     // Atualiza timeline de anúncios
+    // Se o anúncio foi feito a partir de um índice que não é o maior atualmente na timeline,
+    // a timeline é resetada para a posição correspondente a este anúncio
+    // Ex.: timeline tem tamanho 5 porém o currentTimelineIndex é 2 no momento em que o anúncio é feito,
+    // então a timeline após o anúncio terá tamanho 3 (posições 1 e 2 da timeline são preservadas
+    // mas as restantes são descartadas e a nova posição 3 correspondente ao anúncio mais recente é incluída)
     var resetToPos = (announcementHistory.length !== currentTimelineIndex) ? currentTimelineIndex : -1;
     updateAnnouncementHistory(agents, proposition, resetToPos);
 
