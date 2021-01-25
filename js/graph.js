@@ -1,3 +1,9 @@
+// Atualiza a estrutura de database baseado no grafo desenhado no canvas
+function updateDatabaseFromCanvas() {
+    database.states = states;
+    database.relations = transitions;
+}
+
 // Seta o valor dos estados, transições, agentes e proposições da database
 function createDatabase(agents, propositions) {
     var states =  calculateGraphStates(propositions);
